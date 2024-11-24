@@ -1,0 +1,20 @@
+services:
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: pastora
+      MONGO_INITDB_ROOT_PASSWORD: pastora
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: pastora
+      ME_CONFIG_MONGODB_ADMINPASSWORD: pastora
+      ME_CONFIG_MONGODB_URL: mongodb://pastora:pastora@mongo:27017/
+      ME_CONFIG_BASICAUTH: false
