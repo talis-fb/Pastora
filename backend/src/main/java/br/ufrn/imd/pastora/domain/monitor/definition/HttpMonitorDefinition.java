@@ -13,7 +13,7 @@ import java.util.Map;
 public class HttpMonitorDefinition extends AbstractMonitorDefinition {
     String id;
 
-    String KIND = "HTTP";
+    // String KIND = "HTTP";
 
     @NotNull
     String url;

@@ -1,6 +1,6 @@
 package br.ufrn.imd.pastora.controllers;
 
-import br.ufrn.imd.pastora.controllers.dto.CreateMonitorDto;
+import br.ufrn.imd.pastora.controllers.dto.CreateHttpMonitorDto;
 import br.ufrn.imd.pastora.persistence.repository.MonitorRepository;
 import br.ufrn.imd.pastora.persistence.repository.MonitorValidationRepository;
 import br.ufrn.imd.pastora.usecases.CreateMonitorUseCase;
@@ -18,8 +18,8 @@ public class MonitorController {
     private MonitorRepository monitorRepository;
     private MonitorValidationRepository monitorValidationRepository;
 
-    @PostMapping
-    public String createMonitor(@Valid @RequestBody CreateMonitorDto monitorDto) {
+    @PostMapping("http")
+    public String createMonitor(@Valid @RequestBody CreateHttpMonitorDto monitorDto) {
         return new CreateMonitorUseCase(
             monitorRepository,
             monitorValidationRepository
