@@ -3,6 +3,6 @@
 
 <template>
   <main>
-    <p>HOME VIEW</p>  
+    <p>MONITORS VUE</p>  
   </main>
 </template>

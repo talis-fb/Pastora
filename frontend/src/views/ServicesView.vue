@@ -3,6 +3,6 @@
 
 <template>
   <main>
-    <p>HOME VIEW</p>  
+    <p>SERVICES VIEW</p>  
   </main>
 </template>
