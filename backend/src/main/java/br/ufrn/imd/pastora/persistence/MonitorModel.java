@@ -1,8 +1,6 @@
 package br.ufrn.imd.pastora.persistence;
 
-import br.ufrn.imd.pastora.domain.Service;
 import br.ufrn.imd.pastora.domain.monitor.MonitorData;
-import br.ufrn.imd.pastora.domain.monitor.MonitorValidation;
 import br.ufrn.imd.pastora.domain.monitor.definition.AbstractMonitorDefinition;
 import lombok.Builder;
 import lombok.Value;
@@ -10,7 +8,6 @@ import lombok.With;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "monitors")
