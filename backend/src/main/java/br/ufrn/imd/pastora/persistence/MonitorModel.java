@@ -47,4 +47,12 @@ public class MonitorModel {
                 .saveSuccessWhen(data.getSaveSuccessWhen())
                 .build();
     }
+
+    public MonitorData toMonitorData() {
+        return MonitorData.builder()
+            .name(this.getName())
+            .description(this.getDescription())
+            .serviceId(this.getServiceId())
+            .build();
+    }
 }
