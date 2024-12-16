@@ -2,6 +2,7 @@ package br.ufrn.imd.pastora.domain.monitor.definition;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.http.HttpMethod;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,4 +31,15 @@ public class HttpMonitorDefinition extends AbstractMonitorDefinition {
 
     Map<String, String> headers = new HashMap<>();
     String body;
+
+    public org.springframework.http.HttpMethod getSpringMethod() {
+        return switch (this.method) {
+            case GET -> org.springframework.http.HttpMethod.GET;
+            case POST -> org.springframework.http.HttpMethod.POST;
+            case PUT -> org.springframework.http.HttpMethod.PUT;
+            case DELETE -> org.springframework.http.HttpMethod.DELETE;
+            case PATCH -> org.springframework.http.HttpMethod.PATCH;
+            default -> null;
+        };
+    }
 }
