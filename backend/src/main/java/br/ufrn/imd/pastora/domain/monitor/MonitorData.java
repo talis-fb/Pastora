@@ -24,6 +24,9 @@ public class MonitorData {
 
     protected final String serviceId;
 
+    // Trigger
+    protected final Integer intervalRate;
+    
     protected final List<String> onSuccess = new ArrayList<>();
     protected final List<String> onFail = new ArrayList<>();
 
