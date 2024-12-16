@@ -3,9 +3,7 @@ package br.ufrn.imd.pastora.domain.monitor;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Value;
 import lombok.With;
-import lombok.experimental.NonFinal;
 
 import java.util.ArrayList;
 import java.util.List;
