@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Optional;
 
 @Document(collection = "monitors")
 @Builder
@@ -27,6 +28,9 @@ public class MonitorModel {
     List<String> onSuccess;
     List<String> onFail;
     MonitorData.SaveSuccessWhen saveSuccessWhen;
+
+    // Trigger
+    Integer intervalRate;
 
     // Definitions
     AbstractMonitorDefinition definition;
