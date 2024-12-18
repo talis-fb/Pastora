@@ -29,7 +29,7 @@ public class SchedulerExecutions {
 
     final Map<String, Future<ExecutionData>> lockRunningMonitors = new ConcurrentHashMap<>();
 
-    @Scheduled(fixedRate = 100)
+    @Scheduled(initialDelay = 10,fixedRate = 60, timeUnit = TimeUnit.SECONDS)
     public void runMonitors() {
         logger.info("Executing scheduler tasks");
 
