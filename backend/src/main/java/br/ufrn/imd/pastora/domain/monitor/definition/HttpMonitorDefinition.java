@@ -11,7 +11,7 @@ import java.util.Map;
 @With
 @Builder
 public class HttpMonitorDefinition extends AbstractMonitorDefinition {
-    String id;
+    //String id;
 
     // String KIND = "HTTP";
 
