@@ -1,8 +1,12 @@
 package br.ufrn.imd.pastora.scheduler;
 
+import br.ufrn.imd.pastora.components.HttpExecutor;
+import br.ufrn.imd.pastora.domain.ExecutionData;
+import br.ufrn.imd.pastora.persistence.ExecutionModel;
 import br.ufrn.imd.pastora.persistence.MonitorModel;
 import br.ufrn.imd.pastora.persistence.repository.ExecutionRepository;
 import br.ufrn.imd.pastora.persistence.repository.MonitorRepository;
+import br.ufrn.imd.pastora.scheduler.factory.MonitorExecutionFactory;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -21,51 +26,43 @@ public class SchedulerExecutions {
     final ExecutionRepository executionRepository;
     final HttpExecutor httpExecutor;
 
-    ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+    final ExecutorService executorService;
+    MonitorExecutionFactory monitorExecutionFactory;
 
     final Map<String, Future<ExecutionResult>> runningMonitors = new ConcurrentHashMap<>();
-
 
     @Scheduled(fixedRate = 100)
     public void runMonitors() {
         logger.info("Executing scheduler tasks");
-        List<MonitorModel> enabledMonitors = monitorRepository.findMonitorModelByEnabledEquals(true);
-        List<MonitorModel> notInProgressMonitors = enabledMonitors.parallelStream().filter(m -> !runningMonitors.containsKey(m.getId())).toList();
-        if (notInProgressMonitors.isEmpty()) {
-            return;
-        }
 
-        for (MonitorModel monitorModel : notInProgressMonitors) {
-            var task = new AsyncExecutor(httpExecutor, monitorModel.toMonitorData());
-            var future = this.executorService.submit(task);
-            runningMonitors.put(monitorModel.getId(), future);
-        }
-    }
+        var runningMonitors = this.runningMonitors.keySet();
+        List<MonitorModel> monitorsToExec = monitorRepository.findMonitorModelByEnabledEqualsAndIdNotIn(true, runningMonitors);
 
-    public void handleExecutionResult(ExecutionResult executionResult) {
-        executionRepository.save(executionResult);
-        if (executionResult.childExecutions != null) {
-            executionResult.childExecutions.parallelStream().forEach(childExecution -> {
-
+        List<String> monitorIds = monitorsToExec.stream().map(MonitorModel::getId).toList();
+        for (var id : monitorIds) {
+            var executionTask = executorService.submit(monitorExecutionFactory.createMonitorRunner(id));
+            executorService.submit(() -> {
+                try {
+                    var executionData = executionTask.get();
+                    saveExecution(executionData);
+                    logger.info("Removing for running monitors: {}", id);
+                    runningMonitors.remove(id);
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
             });
         }
     }
 
+    public Integer saveExecution(ExecutionData executionData) {
+        var triggered = new ArrayList<Integer>();
+        if (executionData.getChildren() != null) {
+            triggered.addAll(executionData.getChildren().stream().map(this::saveExecution).toList());
+        }
 
-
-    private void addRunningMonitor(String monitorId, Future<ExecutionResult> future) {
-        executorService.submit(() -> {
-            runningMonitors.put(monitorId, future);
-            ExecutionResult result = null;
-            try {
-                result = future.get();
-                handleExecutionResult(result);
-                runningMonitors.remove(monitorId);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        var model = ExecutionModel.fromExecutionData(executionData).withTriggered(triggered);
+        var modelSaved = executionRepository.save(model);
+        return modelSaved.getId();
     }
+
 }

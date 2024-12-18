@@ -1,7 +1,8 @@
 package br.ufrn.imd.pastora.persistence;
 
-import br.ufrn.imd.pastora.domain.monitor.MonitorData;
-import br.ufrn.imd.pastora.domain.monitor.definition.AbstractMonitorDefinition;
+import br.ufrn.imd.pastora.domain.MonitorAbstractDefinition;
+import br.ufrn.imd.pastora.domain.MonitorData;
+import br.ufrn.imd.pastora.domain.MonitorHttpDefinition;
 import lombok.Builder;
 import lombok.Value;
 import lombok.With;
@@ -9,7 +10,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
-import java.util.Optional;
 
 @Document(collection = "monitors")
 @Builder
@@ -33,7 +33,7 @@ public class MonitorModel {
     Integer intervalRate;
 
     // Definitions
-    AbstractMonitorDefinition definition;
+    MonitorAbstractDefinition definition;
     List<String> validations;
 
     public static MonitorModel fromMonitorData(MonitorData data) {

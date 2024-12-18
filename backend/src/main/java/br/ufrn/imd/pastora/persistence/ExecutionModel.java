@@ -1,6 +1,6 @@
 package br.ufrn.imd.pastora.persistence;
 
-import br.ufrn.imd.pastora.domain.Execution;
+import br.ufrn.imd.pastora.domain.ExecutionData;
 import lombok.Builder;
 import lombok.Value;
 import lombok.With;
@@ -24,5 +24,15 @@ public class ExecutionModel {
     String monitorId;
     List<Integer> triggered; // Monitor IDS that this one triggered
     Object data;
-    List<Execution.Error> errors;
+    List<ExecutionData.Error> errors;
+
+    public static ExecutionModel fromExecutionData(ExecutionData executionData) {
+        return ExecutionModel.builder()
+                .startedTime(executionData.getStartedTime())
+                .finishedTime(executionData.getFinishedTime())
+                .data(executionData.getData())
+                .errors(executionData.getErrors())
+                .monitorId(executionData.getMonitorId())
+                .build();
+    }
 }

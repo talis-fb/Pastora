@@ -1,4 +1,4 @@
-package br.ufrn.imd.pastora.domain.monitor;
+package br.ufrn.imd.pastora.domain;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;

@@ -1,6 +1,6 @@
 package br.ufrn.imd.pastora.scheduler;
 
-import br.ufrn.imd.pastora.domain.Execution;
+import br.ufrn.imd.pastora.domain.ExecutionData;
 import lombok.*;
 
 import java.util.List;
@@ -9,6 +9,6 @@ import java.util.List;
 @With
 @Builder
 public class ExecutionResult {
-    public final Execution execution;
-    public final List<Execution> childExecutions;
+    ExecutionData executionData;
+    List<ExecutionData> childExecutionData;
 }

@@ -1,8 +1,8 @@
 package br.ufrn.imd.pastora.controllers.dto;
 
-import br.ufrn.imd.pastora.domain.monitor.MonitorData;
-import br.ufrn.imd.pastora.domain.monitor.MonitorValidation;
-import br.ufrn.imd.pastora.domain.monitor.definition.HttpMonitorDefinition;
+import br.ufrn.imd.pastora.domain.MonitorData;
+import br.ufrn.imd.pastora.domain.MonitorHttpDefinition;
+import br.ufrn.imd.pastora.domain.MonitorValidation;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Value;
@@ -15,7 +15,7 @@ public class CreateHttpMonitorDto {
     MonitorData data;
 
     @NotNull
-    HttpMonitorDefinition definition;
+    MonitorHttpDefinition definition;
 
     @NotNull
     @NotEmpty
