@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -24,29 +23,34 @@ public class SchedulerExecutions {
 
     final MonitorRepository monitorRepository;
     final ExecutionRepository executionRepository;
-    final HttpExecutor httpExecutor;
 
     final ExecutorService executorService;
-    MonitorExecutionFactory monitorExecutionFactory;
+    final MonitorExecutionFactory monitorExecutionFactory;
 
-    final Map<String, Future<ExecutionResult>> runningMonitors = new ConcurrentHashMap<>();
+    final Map<String, Future<ExecutionData>> lockRunningMonitors = new ConcurrentHashMap<>();
 
     @Scheduled(fixedRate = 100)
     public void runMonitors() {
         logger.info("Executing scheduler tasks");
 
-        var runningMonitors = this.runningMonitors.keySet();
-        List<MonitorModel> monitorsToExec = monitorRepository.findMonitorModelByEnabledEqualsAndIdNotIn(true, runningMonitors);
+        var monitorsInProgress = this.lockRunningMonitors.keySet();
+        List<MonitorModel> monitorsToExec = monitorRepository.findMonitorModelByEnabledEqualsAndIdNotIn(true, monitorsInProgress);
 
         List<String> monitorIds = monitorsToExec.stream().map(MonitorModel::getId).toList();
         for (var id : monitorIds) {
-            var executionTask = executorService.submit(monitorExecutionFactory.createMonitorRunner(id));
+            // Create the runner for Monitor
+            logger.info("Init monitors execution: {}", id);
+            var monitorTask = executorService.submit(monitorExecutionFactory.createMonitorRunner(id));
+            lockRunningMonitors.put(id, monitorTask);
+
+            // Handle when Runner finishes
             executorService.submit(() -> {
                 try {
-                    var executionData = executionTask.get();
+                    var executionData = monitorTask.get();
+                    logger.info("Saving monitors execution: {}", id);
                     saveExecution(executionData);
                     logger.info("Removing for running monitors: {}", id);
-                    runningMonitors.remove(id);
+                    lockRunningMonitors.remove(id);
                 } catch (InterruptedException | ExecutionException e) {
                     throw new RuntimeException(e);
                 }
@@ -62,6 +66,9 @@ public class SchedulerExecutions {
 
         var model = ExecutionModel.fromExecutionData(executionData).withTriggered(triggered);
         var modelSaved = executionRepository.save(model);
+
+        logger.info(" -> Saving monitors execution with {} triggered: {}", triggered, modelSaved.getId());
+
         return modelSaved.getId();
     }
 
