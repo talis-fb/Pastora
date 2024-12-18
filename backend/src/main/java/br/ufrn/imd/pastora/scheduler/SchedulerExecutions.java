@@ -29,12 +29,14 @@ public class SchedulerExecutions {
 
     final Map<String, Future<ExecutionData>> lockRunningMonitors = new ConcurrentHashMap<>();
 
-    @Scheduled(initialDelay = 10,fixedRate = 60, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(initialDelay = 5,fixedRate = 60, timeUnit = TimeUnit.SECONDS)
     public void runMonitors() {
         logger.info("Executing scheduler tasks");
 
         var monitorsInProgress = this.lockRunningMonitors.keySet();
-        List<MonitorModel> monitorsToExec = monitorRepository.findMonitorModelByEnabledEqualsAndIdNotIn(true, monitorsInProgress);
+        logger.info("Running Monitors: {}", monitorsInProgress);
+
+        List<MonitorModel> monitorsToExec = monitorRepository.findMonitorModelByEnabledEqualsAndIdIsNotIn(true, monitorsInProgress);
 
         List<String> monitorIds = monitorsToExec.stream().map(MonitorModel::getId).toList();
         for (var id : monitorIds) {
@@ -60,14 +62,17 @@ public class SchedulerExecutions {
 
     public Integer saveExecution(ExecutionData executionData) {
         var triggered = new ArrayList<Integer>();
-        if (executionData.getChildren() != null) {
+        if (executionData.getChildren() != null && !executionData.getChildren().isEmpty()) {
             triggered.addAll(executionData.getChildren().stream().map(this::saveExecution).toList());
         }
 
         var model = ExecutionModel.fromExecutionData(executionData).withTriggered(triggered);
-        var modelSaved = executionRepository.save(model);
 
-        logger.info(" -> Saving monitors execution with {} triggered: {}", triggered, modelSaved.getId());
+
+        logger.info(" -> Saving monitors execution with {} triggered", triggered);
+        var modelSaved = executionRepository.save(model);
+        logger.info(" -> Saved execution {}", modelSaved.getId());
+
 
         return modelSaved.getId();
     }

@@ -17,7 +17,9 @@ public class HttpRequest {
 
     public org.springframework.http.HttpHeaders getSpringHeaders() {
         org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
-        headers.setAll(this.headers);
+        if (this.headers != null) {
+            headers.setAll(this.headers);
+        }
         return headers;
     }
 

@@ -23,7 +23,7 @@ public class ExecutionModel {
 
     String monitorId;
     List<Integer> triggered; // Monitor IDS that this one triggered
-    Object data;
+    String data;
     List<ExecutionData.Error> errors;
 
     public static ExecutionModel fromExecutionData(ExecutionData executionData) {

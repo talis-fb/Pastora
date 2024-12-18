@@ -18,6 +18,5 @@ public class CreateHttpMonitorDto {
     MonitorHttpDefinition definition;
 
     @NotNull
-    @NotEmpty
     List<MonitorValidation> validations;
 }

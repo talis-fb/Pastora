@@ -12,17 +12,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
 @With
 @Builder
-public class MonitorHttpDefinition extends MonitorAbstractDefinition {
+public class MonitorHttpDefinition  {
     String id;
 
     @NotNull
-    private final String type = "HTTP";
-
-    @NotNull
     String url;
+
+
+    String type = "HTTP";
+
 
     @NotNull
     HttpMethod method;

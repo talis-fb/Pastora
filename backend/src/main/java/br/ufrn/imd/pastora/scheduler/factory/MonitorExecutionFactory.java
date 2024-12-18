@@ -9,7 +9,10 @@ import br.ufrn.imd.pastora.persistence.MonitorModel;
 import br.ufrn.imd.pastora.persistence.repository.ExecutionRepository;
 import br.ufrn.imd.pastora.persistence.repository.MonitorRepository;
 import br.ufrn.imd.pastora.persistence.repository.MonitorValidationRepository;
+import br.ufrn.imd.pastora.scheduler.SchedulerExecutions;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -19,6 +22,7 @@ import java.util.concurrent.*;
 @Component
 @RequiredArgsConstructor
 public class MonitorExecutionFactory {
+    final static Logger logger = LoggerFactory.getLogger(MonitorExecutionFactory.class);
     final ExecutionRepository executionRepository;
     final MonitorRepository monitorRepository;
     final MonitorValidationRepository monitorValidationRepository;
@@ -27,6 +31,7 @@ public class MonitorExecutionFactory {
 
     public Callable<ExecutionData> createMonitorRunner(String monitorId) {
         return () -> {
+            logger.info("Init task scheduler monitor: {}", monitorId);
             MonitorModel model = monitorRepository.findById(monitorId).orElseThrow();
             MonitorData data = model.toMonitorData();
             var validationModels = monitorValidationRepository.findAllById(model.getValidations());
@@ -34,9 +39,12 @@ public class MonitorExecutionFactory {
             var definition = model.getDefinition();
             var httpDefition = (MonitorHttpDefinition) definition;
 
+            logger.info("Make HTTP Request of monitor: {}", monitorId);
+
             Date startTime = new Date();
             HttpResponse response = httpExecutor.submitRequest(httpDefition.toHttpRequest());
             Date finishTime = new Date();
+            logger.info("Finish HTTP Request of monitor: {}", monitorId);
 
             var execution = ExecutionData.builder()
                     .monitorId(monitorId)
@@ -50,6 +58,7 @@ public class MonitorExecutionFactory {
             //  if is False the 'anotherMonotiorToExec' is gonna be the result of 'getOnFail'
             var anotherMonotiorToExec = model.getOnSuccess();
 
+            logger.info("Exec children of: {}", monitorId);
             List<ExecutionData> children = anotherMonotiorToExec
                     .stream()
                     .map(id -> executorService.submit(createMonitorRunner(id)))

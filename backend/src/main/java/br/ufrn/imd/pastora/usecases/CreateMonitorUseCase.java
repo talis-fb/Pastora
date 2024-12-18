@@ -2,6 +2,7 @@ package br.ufrn.imd.pastora.usecases;
 
 import br.ufrn.imd.pastora.domain.MonitorAbstractDefinition;
 import br.ufrn.imd.pastora.domain.MonitorData;
+import br.ufrn.imd.pastora.domain.MonitorHttpDefinition;
 import br.ufrn.imd.pastora.domain.MonitorValidation;
 import br.ufrn.imd.pastora.persistence.MonitorModel;
 import br.ufrn.imd.pastora.persistence.MonitorValidationModel;
@@ -19,7 +20,7 @@ public class CreateMonitorUseCase {
     private final MonitorValidationRepository monitorValidationRepository;
 
     @Transactional
-    public String execute(MonitorData monitor, MonitorAbstractDefinition definition, List<MonitorValidation> validations) {
+    public String execute(MonitorData monitor, MonitorHttpDefinition definition, List<MonitorValidation> validations) {
         List<String> validationIds = new ArrayList<>();
 
         List<MonitorValidationModel> validationModels = validations.stream().map(MonitorValidationModel::fromEntity).toList();

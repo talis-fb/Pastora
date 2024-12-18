@@ -2,6 +2,9 @@ package br.ufrn.imd.pastora.components;
 
 import br.ufrn.imd.pastora.domain.http.HttpRequest;
 import br.ufrn.imd.pastora.domain.http.HttpResponse;
+import br.ufrn.imd.pastora.scheduler.factory.MonitorExecutionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -11,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class HttpExecutor {
+    final static Logger logger = LoggerFactory.getLogger(HttpExecutor.class);
     final private RestTemplate restTemplate;
     public HttpExecutor(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
@@ -18,6 +22,8 @@ public class HttpExecutor {
 
 
     public HttpResponse submitRequest(HttpRequest request) {
+        logger.info("EXECUTING HTTP Request -> URL {}, METHOD: {}", request.getUrl(), request.getMethod());
+
         // Create headers
         Object payload = request.getPayload();
         HttpHeaders httpHeaders = request.getSpringHeaders();

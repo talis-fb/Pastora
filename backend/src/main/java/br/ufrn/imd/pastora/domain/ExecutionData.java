@@ -15,7 +15,7 @@ public class ExecutionData {
     protected final Date finishedTime;
 
     protected final String monitorId;
-    protected final Object data;
+    protected final String data;
     protected final List<ExecutionData.Error> errors;
 
     protected final List<ExecutionData> children;

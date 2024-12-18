@@ -33,7 +33,7 @@ public class MonitorModel {
     Integer intervalRate;
 
     // Definitions
-    MonitorAbstractDefinition definition;
+    MonitorHttpDefinition definition;
     List<String> validations;
 
     public static MonitorModel fromMonitorData(MonitorData data) {
