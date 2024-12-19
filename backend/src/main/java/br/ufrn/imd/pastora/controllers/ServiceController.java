@@ -2,6 +2,7 @@ package br.ufrn.imd.pastora.controllers;
 
 import br.ufrn.imd.pastora.components.PhotoStorageComponent;
 import br.ufrn.imd.pastora.domain.Service;
+import br.ufrn.imd.pastora.exceptions.BusinessException;
 import br.ufrn.imd.pastora.persistence.ServiceModel;
 import br.ufrn.imd.pastora.persistence.repository.ServiceRepository;
 import br.ufrn.imd.pastora.usecases.CreateServiceUseCase;
@@ -13,6 +14,8 @@ import br.ufrn.imd.pastora.usecases.UpdateServiceUseCase;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
 import org.springframework.http.HttpHeaders;
@@ -37,12 +40,14 @@ public class ServiceController {
 
     private PhotoStorageComponent photoStorageComponent;
 
+    @SneakyThrows
     @PostMapping
     public ResponseEntity<String> createService(
         @RequestParam(required = true) String name,
         @RequestParam (required = false) String description,
         @RequestParam (required = false) MultipartFile photo
     ) {
+        this.validatePhotoType(photo);
         final Service service = Service.builder()
             .name(name)
             .description(description)
@@ -65,6 +70,7 @@ public class ServiceController {
         @RequestParam (required = false) String description,
         @RequestParam (required = false) MultipartFile photo        
     ) {
+        this.validatePhotoType(photo);
         final Service service = Service.builder()
                 .name(name)
                 .description(description)
@@ -116,9 +122,23 @@ public class ServiceController {
     ) {
         byte[] photoBytes = new GetServiceIconUseCase(photoStorageComponent).execute(fileName);
 
+        // Detectar o tipo MIME
+        String mimeType = Files.probeContentType(Path.of(photoStorageComponent.getFilePath(fileName)));
+        
+        if (mimeType == null) {
+            mimeType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+        }
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
-                .contentType(MediaType.IMAGE_PNG)
+                .contentType(MediaType.parseMediaType(mimeType))
                 .body(photoBytes);
     }    
+
+    private void validatePhotoType(MultipartFile photo) throws BusinessException{
+        String contentType = photo.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new BusinessException("O arquivo enviado não é uma imagem válida.");
+        }        
+    }
 }
