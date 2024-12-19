@@ -2,7 +2,6 @@ package br.ufrn.imd.pastora.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -28,19 +27,9 @@ public class SecuritySetup {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos
                         .requestMatchers("/ping").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-
-                        // Endpoints protegidos
-                        .requestMatchers(HttpMethod.GET, "/services/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/services/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/services/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/services/**").authenticated()
-
-                        .requestMatchers(HttpMethod.POST, "/monitors/**").authenticated()
-
                         .anyRequest().authenticated())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
@@ -50,7 +39,7 @@ public class SecuritySetup {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*")); // to do: especificar origens permitidas em produção
+        configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setExposedHeaders(List.of("Authorization"));
