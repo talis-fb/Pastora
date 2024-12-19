@@ -1,6 +1,7 @@
 package br.ufrn.imd.pastora.persistence;
 
 import br.ufrn.imd.pastora.domain.monitor.MonitorData;
+import br.ufrn.imd.pastora.domain.monitor.MonitorValidation;
 import br.ufrn.imd.pastora.domain.monitor.definition.AbstractMonitorDefinition;
 import lombok.Builder;
 import lombok.Value;
@@ -30,7 +31,7 @@ public class MonitorModel {
 
     // Definitions
     AbstractMonitorDefinition definition;
-    List<String> validations;
+    List<MonitorValidation> validations;
 
     public static MonitorModel fromMonitorData(MonitorData data) {
         return MonitorModel.builder()

@@ -1,10 +1,8 @@
 package br.ufrn.imd.pastora.controllers;
 
 import br.ufrn.imd.pastora.controllers.dto.CreateHttpMonitorDto;
-import br.ufrn.imd.pastora.controllers.dto.MonitorResponseDTO;
 import br.ufrn.imd.pastora.persistence.MonitorModel;
 import br.ufrn.imd.pastora.persistence.repository.MonitorRepository;
-import br.ufrn.imd.pastora.persistence.repository.MonitorValidationRepository;
 import br.ufrn.imd.pastora.usecases.CreateMonitorUseCase;
 import br.ufrn.imd.pastora.usecases.GetMonitorUseCase;
 import br.ufrn.imd.pastora.usecases.GetMonitorsByServiceUseCase;
@@ -28,13 +26,11 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class MonitorController {
     private MonitorRepository monitorRepository;
-    private MonitorValidationRepository monitorValidationRepository;
 
     @PostMapping("http")
     public ResponseEntity<String> createMonitor(@Valid @RequestBody CreateHttpMonitorDto monitorDto) {
         final String createdId = new CreateMonitorUseCase(
-            monitorRepository,
-            monitorValidationRepository
+            monitorRepository
         ).execute(
             monitorDto.getData(),
             monitorDto.getDefinition(),
@@ -54,12 +50,11 @@ public class MonitorController {
     }
 
     @GetMapping("http/{id}")
-    public ResponseEntity<MonitorResponseDTO> getMonitor(
+    public ResponseEntity<MonitorModel> getMonitor(
         @PathVariable(required = true) String id    
     ) {
-        final Optional<MonitorResponseDTO> finded = new GetMonitorUseCase(
-            monitorRepository,
-            monitorValidationRepository
+        final Optional<MonitorModel> finded = new GetMonitorUseCase(
+            monitorRepository
         ).execute(id);
         
         return ResponseEntity.of(finded);
