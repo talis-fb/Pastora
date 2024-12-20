@@ -7,9 +7,9 @@ import br.ufrn.imd.pastora.persistence.ServiceModel;
 import br.ufrn.imd.pastora.persistence.repository.ServiceRepository;
 import br.ufrn.imd.pastora.usecases.CreateServiceUseCase;
 import br.ufrn.imd.pastora.usecases.DeleteServiceUseCase;
+import br.ufrn.imd.pastora.usecases.GetServiceByNameText;
 import br.ufrn.imd.pastora.usecases.GetServiceIconUseCase;
 import br.ufrn.imd.pastora.usecases.GetServiceUseCase;
-import br.ufrn.imd.pastora.usecases.GetServicesBySearchTextUseCase;
 import br.ufrn.imd.pastora.usecases.GetServicesUseCase;
 import br.ufrn.imd.pastora.usecases.UpdateServiceUseCase;
 import br.ufrn.imd.pastora.utils.AuthenticatedUserUtils;
@@ -131,7 +131,7 @@ public class ServiceController {
         final String userId = this.authenticatedUserUtils.getAuthenticatedUserId();
         Iterable<ServiceModel> services = null;
         if (name != null && !name.isEmpty()) {
-            services = new GetServicesBySearchTextUseCase(serviceRepository).execute(name, userId);
+            services = new GetServiceByNameText(serviceRepository).execute(name, userId);
         } else {
             services = new GetServicesUseCase(serviceRepository).execute(userId);
         }
