@@ -39,6 +39,7 @@ public class MonitorModel {
                 .description(data.getDescription())
                 .enabled(data.getEnabled())
                 .serviceId(data.getServiceId())
+                .userId(data.getUserId())
                 .onSuccess(data.getOnSuccess())
                 .onFail(data.getOnFail())
                 .saveSuccessWhen(data.getSaveSuccessWhen())

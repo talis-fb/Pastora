@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public class GetMonitorsUseCase {
   private final MonitorRepository monitorRepository;
 
-  public Iterable<MonitorModel> execute() {
-      return this.monitorRepository.findAll();
+  public Iterable<MonitorModel> execute(String userId) {
+      return this.monitorRepository.findByUserId(userId);
   }
 }

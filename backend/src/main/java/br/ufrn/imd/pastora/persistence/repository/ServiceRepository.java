@@ -9,4 +9,5 @@ import org.springframework.data.repository.CrudRepository;
 public interface ServiceRepository extends CrudRepository<ServiceModel, String> {
   public Optional<ServiceModel> findByIdAndUserId(String id, String userId);
   public Iterable<ServiceModel> findByUserId(String userId);
+  public boolean existsByIdAndUserId(String id, String userId);
 }

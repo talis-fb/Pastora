@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 public class GetMonitorUseCase {
   private final MonitorRepository monitorRepository;
 
-  public Optional<MonitorModel> execute(String id) {
-    final Optional<MonitorModel> findedMonitor = this.monitorRepository.findById(id);
+  public Optional<MonitorModel> execute(String id, String userId) {
+    final Optional<MonitorModel> findedMonitor = this.monitorRepository.findByIdAndUserId(id, userId);
     
     return findedMonitor;
   }

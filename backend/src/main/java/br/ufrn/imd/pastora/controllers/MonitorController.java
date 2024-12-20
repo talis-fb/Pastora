@@ -3,12 +3,15 @@ package br.ufrn.imd.pastora.controllers;
 import br.ufrn.imd.pastora.controllers.dto.CreateHttpMonitorDto;
 import br.ufrn.imd.pastora.persistence.MonitorModel;
 import br.ufrn.imd.pastora.persistence.repository.MonitorRepository;
+import br.ufrn.imd.pastora.persistence.repository.ServiceRepository;
 import br.ufrn.imd.pastora.usecases.CreateMonitorUseCase;
 import br.ufrn.imd.pastora.usecases.GetMonitorUseCase;
 import br.ufrn.imd.pastora.usecases.GetMonitorsByServiceUseCase;
 import br.ufrn.imd.pastora.usecases.GetMonitorsUseCase;
+import br.ufrn.imd.pastora.utils.AuthenticatedUserUtils;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.util.Optional;
 
@@ -25,14 +28,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("monitors")
 @AllArgsConstructor
 public class MonitorController {
+    private AuthenticatedUserUtils authenticatedUserUtils;
     private MonitorRepository monitorRepository;
+    private ServiceRepository serviceRepository;
 
+    @SneakyThrows
     @PostMapping("http")
     public ResponseEntity<String> createMonitor(@Valid @RequestBody CreateHttpMonitorDto monitorDto) {
+        final String userId = authenticatedUserUtils.getAuthenticatedUserId();
+        
         final String createdId = new CreateMonitorUseCase(
             monitorRepository
         ).execute(
-            monitorDto.getData(),
+            monitorDto.getData().withUserId(userId),
             monitorDto.getDefinition(),
             monitorDto.getValidations()
         );
@@ -40,33 +48,43 @@ public class MonitorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdId);
     }
 
+    @SneakyThrows
     @GetMapping("http")
     public ResponseEntity<Iterable<MonitorModel>> getMonitors() {
+        final String userId = authenticatedUserUtils.getAuthenticatedUserId();
+
         final Iterable<MonitorModel> finded = new GetMonitorsUseCase(
             monitorRepository
-        ).execute();
+        ).execute(userId);
 
         return ResponseEntity.ok(finded);
     }
 
+    @SneakyThrows
     @GetMapping("http/{id}")
     public ResponseEntity<MonitorModel> getMonitor(
         @PathVariable(required = true) String id    
     ) {
+        final String userId = authenticatedUserUtils.getAuthenticatedUserId();
+
         final Optional<MonitorModel> finded = new GetMonitorUseCase(
             monitorRepository
-        ).execute(id);
+        ).execute(id, userId);
         
         return ResponseEntity.of(finded);
     }
 
+    @SneakyThrows
     @GetMapping("/service/{id}")
     public ResponseEntity<Iterable<MonitorModel>> getMonitorsByServiceId(
             @PathVariable(required = true) String id
     ) {
+        final String userId = authenticatedUserUtils.getAuthenticatedUserId();
+
         final Iterable<MonitorModel> finded = new GetMonitorsByServiceUseCase(
-            monitorRepository
-        ).execute(id);
+            monitorRepository,
+            serviceRepository
+        ).execute(id, userId);
 
         return ResponseEntity.ok(finded);
     }    
