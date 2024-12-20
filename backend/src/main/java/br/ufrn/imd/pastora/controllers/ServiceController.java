@@ -11,6 +11,7 @@ import br.ufrn.imd.pastora.usecases.GetServiceIconUseCase;
 import br.ufrn.imd.pastora.usecases.GetServiceUseCase;
 import br.ufrn.imd.pastora.usecases.GetServicesUseCase;
 import br.ufrn.imd.pastora.usecases.UpdateServiceUseCase;
+import br.ufrn.imd.pastora.utils.AuthenticatedUserUtils;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -36,6 +37,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("services")
 @AllArgsConstructor
 public class ServiceController {
+    private AuthenticatedUserUtils authenticatedUserUtils;
+
     private ServiceRepository serviceRepository;
 
     private PhotoStorageComponent photoStorageComponent;
@@ -47,11 +50,14 @@ public class ServiceController {
         @RequestParam (required = false) String description,
         @RequestParam (required = false) MultipartFile photo
     ) {
+        final String userId = this.authenticatedUserUtils.getAuthenticatedUserId();
+
         this.validatePhotoType(photo);
         final Service service = Service.builder()
             .name(name)
             .description(description)
             .iconUrl(null)
+            .userId(userId)
             .build();
 
         final String createdServiceId = new CreateServiceUseCase(
@@ -70,6 +76,8 @@ public class ServiceController {
         @RequestParam (required = false) String description,
         @RequestParam (required = false) MultipartFile photo        
     ) {
+        final String userId = this.authenticatedUserUtils.getAuthenticatedUserId();
+
         this.validatePhotoType(photo);
         final Service service = Service.builder()
                 .name(name)
@@ -80,7 +88,7 @@ public class ServiceController {
         final Service updated = new UpdateServiceUseCase(
             serviceRepository,
             photoStorageComponent
-        ).execute(id, service, photo);
+        ).execute(id, service, photo, userId);
 
         return ResponseEntity.ok(updated);
     }
@@ -90,28 +98,36 @@ public class ServiceController {
     public ResponseEntity<Service> deleteService(
         @PathVariable(required = true) String id
     ) {
+        final String userId = this.authenticatedUserUtils.getAuthenticatedUserId();
+
         final Service deletedService = new DeleteServiceUseCase(
             serviceRepository,
             photoStorageComponent
-        ).execute(id);
+        ).execute(id, userId);
 
         return ResponseEntity.ok(deletedService);
     }
 
+    @SneakyThrows
     @GetMapping("/{id}")
     public ResponseEntity<ServiceModel> getServiceById(
         @PathVariable(required = true) String id
     ) {
+        final String userId = this.authenticatedUserUtils.getAuthenticatedUserId();
+
         final Optional<ServiceModel> finded = new GetServiceUseCase(
             serviceRepository
-        ).execute(id);
+        ).execute(id, userId);
 
         return ResponseEntity.of(finded);
     }
 
+    @SneakyThrows
     @GetMapping
     public ResponseEntity<Iterable<ServiceModel>> getAllServices() {
-        final var services = new GetServicesUseCase(serviceRepository).execute();
+        final String userId = this.authenticatedUserUtils.getAuthenticatedUserId();
+
+        final var services = new GetServicesUseCase(serviceRepository).execute(userId);
         return ResponseEntity.ok(services);
     }
 
@@ -136,9 +152,11 @@ public class ServiceController {
     }    
 
     private void validatePhotoType(MultipartFile photo) throws BusinessException{
-        String contentType = photo.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            throw new BusinessException("O arquivo enviado não é uma imagem válida.");
-        }        
+        if(photo != null && !photo.isEmpty()) {
+            String contentType = photo.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                throw new BusinessException("O arquivo enviado não é uma imagem válida.");
+            }
+        }
     }
 }

@@ -12,6 +12,7 @@ public class Service {
     @NotNull
     String name;
 
+    String userId;
     String description;
 
     String iconUrl;
