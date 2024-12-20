@@ -1,5 +1,6 @@
 package br.ufrn.imd.pastora.usecases;
 
+import br.ufrn.imd.pastora.config.security.JwtTokenProvider;
 import br.ufrn.imd.pastora.controllers.dto.SignInDto;
 import br.ufrn.imd.pastora.persistence.UserModel;
 import br.ufrn.imd.pastora.persistence.repository.UserRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class SignInUseCase {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public String execute(SignInDto signInDto) {
         UserModel user = userRepository.findByEmail(signInDto.getEmail())
@@ -21,6 +23,6 @@ public class SignInUseCase {
             throw new IllegalArgumentException("Invalid email or password");
         }
 
-        return user.getId(); // Isso vai retornar um JWT TOken no futuro
+        return jwtTokenProvider.generateToken(user.getEmail(), user.getId());
     }
 }
