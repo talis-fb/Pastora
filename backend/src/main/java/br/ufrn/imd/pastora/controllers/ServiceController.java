@@ -9,6 +9,7 @@ import br.ufrn.imd.pastora.usecases.CreateServiceUseCase;
 import br.ufrn.imd.pastora.usecases.DeleteServiceUseCase;
 import br.ufrn.imd.pastora.usecases.GetServiceIconUseCase;
 import br.ufrn.imd.pastora.usecases.GetServiceUseCase;
+import br.ufrn.imd.pastora.usecases.GetServicesBySearchTextUseCase;
 import br.ufrn.imd.pastora.usecases.GetServicesUseCase;
 import br.ufrn.imd.pastora.usecases.UpdateServiceUseCase;
 import br.ufrn.imd.pastora.utils.AuthenticatedUserUtils;
@@ -124,10 +125,17 @@ public class ServiceController {
 
     @SneakyThrows
     @GetMapping
-    public ResponseEntity<Iterable<ServiceModel>> getAllServices() {
+    public ResponseEntity<Iterable<ServiceModel>> getAllServices(
+        @RequestParam(required = false) String name
+    ) {
         final String userId = this.authenticatedUserUtils.getAuthenticatedUserId();
+        Iterable<ServiceModel> services = null;
+        if (name != null && !name.isEmpty()) {
+            services = new GetServicesBySearchTextUseCase(serviceRepository).execute(name, userId);
+        } else {
+            services = new GetServicesUseCase(serviceRepository).execute(userId);
+        }
 
-        final var services = new GetServicesUseCase(serviceRepository).execute(userId);
         return ResponseEntity.ok(services);
     }
 

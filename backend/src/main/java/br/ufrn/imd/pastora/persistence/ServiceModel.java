@@ -5,8 +5,13 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.With;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+@CompoundIndexes({
+        @CompoundIndex(name = "name_text_index", def = "{ 'name': 'text' }")
+})
 @Document(collection = "services")
 @Builder
 @Value
