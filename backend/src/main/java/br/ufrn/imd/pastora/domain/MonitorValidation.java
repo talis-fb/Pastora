@@ -1,4 +1,4 @@
-package br.ufrn.imd.pastora.domain.monitor;
+package br.ufrn.imd.pastora.domain;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -10,11 +10,11 @@ import lombok.With;
 @Builder
 public class MonitorValidation {
     @NotNull
-    String field; // e.g., "status", "url", "method", "body", "headers"
+    protected final String field; // e.g., "status", "url", "method", "body", "headers"
     @NotNull
-    Operation operation;
+    protected final Operation operation;
     @NotNull
-    Object value; // e.g., expected value or pattern
+    protected final Object value; // e.g., expected value or pattern
 
     public enum Operation {
         EQUALS,

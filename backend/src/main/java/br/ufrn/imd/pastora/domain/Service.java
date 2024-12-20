@@ -10,9 +10,9 @@ import lombok.With;
 @Builder
 public class Service {
     @NotNull
-    String name;
+    protected final String name;
 
-    String description;
+    protected final String description;
 
-    String iconUrl;
+    protected final String iconUrl;
 }

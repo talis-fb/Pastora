@@ -1,6 +1,6 @@
 package br.ufrn.imd.pastora.persistence;
 
-import br.ufrn.imd.pastora.domain.monitor.MonitorValidation;
+import br.ufrn.imd.pastora.domain.MonitorValidation;
 import lombok.Builder;
 import lombok.Value;
 import lombok.With;
