@@ -8,7 +8,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
 
-@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
+
+@SpringBootApplication
 public class PastoraApplication {
 
 	public static void main(String[] args) {
