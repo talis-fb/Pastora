@@ -1,6 +1,7 @@
 package br.ufrn.imd.pastora.controllers;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,6 +9,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import br.ufrn.imd.pastora.exceptions.BusinessException;
 import br.ufrn.imd.pastora.exceptions.EntityNotFoundException;
+import br.ufrn.imd.pastora.exceptions.InvalidCredentialsException;
 
 @ControllerAdvice
 public class ExceptionHandlers extends ResponseEntityExceptionHandler {
@@ -19,5 +21,10 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
   @ExceptionHandler(BusinessException.class)
   private ResponseEntity<String> businessExceptionHandler(BusinessException exception) {
     return ResponseEntity.badRequest().body(exception.getMessage());
+  }
+
+  @ExceptionHandler(InvalidCredentialsException.class)
+  private ResponseEntity<String> invalidCredentialsExceptionHandler(InvalidCredentialsException exception) {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
   }
 }
