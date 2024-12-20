@@ -2,7 +2,6 @@ package br.ufrn.imd.pastora.components;
 
 import br.ufrn.imd.pastora.domain.http.HttpRequest;
 import br.ufrn.imd.pastora.domain.http.HttpResponse;
-import br.ufrn.imd.pastora.scheduler.factory.MonitorExecutionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -45,6 +44,7 @@ public class HttpExecutor {
         }
 
         // Return the response body
+        logger.info("Finished request with status {}", responseEntity.getStatusCode());
         return HttpResponse
             .builder()
             .statusCode(responseEntity.getStatusCode().value())

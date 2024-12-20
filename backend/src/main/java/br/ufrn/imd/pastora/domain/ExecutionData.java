@@ -17,11 +17,16 @@ public class ExecutionData {
     protected final String monitorId;
     protected final String data;
     protected final List<ExecutionData.Error> errors;
-
-    protected final List<ExecutionData> children;
+    protected final ExecutionData.Status status;
 
     public static class Error {
         String message;
         String validationId;
+    }
+
+    public enum Status {
+        IDLE,
+        RUNNING,
+        FINISHED,
     }
 }

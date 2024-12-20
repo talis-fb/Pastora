@@ -1,5 +1,6 @@
 package br.ufrn.imd.pastora.scheduler.factory;
 
+/*
 import br.ufrn.imd.pastora.components.HttpExecutor;
 import br.ufrn.imd.pastora.domain.ExecutionData;
 import br.ufrn.imd.pastora.domain.MonitorData;
@@ -13,6 +14,7 @@ import br.ufrn.imd.pastora.scheduler.SchedulerExecutions;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -27,9 +29,10 @@ public class MonitorExecutionFactory {
     final MonitorRepository monitorRepository;
     final MonitorValidationRepository monitorValidationRepository;
     final HttpExecutor httpExecutor;
-    final ExecutorService executorService;
+    final Executor executorService;
 
-    public Callable<ExecutionData> createMonitorRunner(String monitorId) {
+    @Async
+    public CompletableFuture<ExecutionData> createMonitorRunner(String monitorId) {
         return () -> {
             logger.info("Init task scheduler monitor: {}", monitorId);
             MonitorModel model = monitorRepository.findById(monitorId).orElseThrow();
@@ -77,3 +80,4 @@ public class MonitorExecutionFactory {
     }
 
 }
+ */

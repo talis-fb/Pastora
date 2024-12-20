@@ -20,9 +20,7 @@ public class MonitorHttpDefinition  {
     @NotNull
     String url;
 
-
     String type = "HTTP";
-
 
     @NotNull
     HttpMethod method;

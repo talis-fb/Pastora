@@ -6,75 +6,59 @@ import br.ufrn.imd.pastora.persistence.ExecutionModel;
 import br.ufrn.imd.pastora.persistence.MonitorModel;
 import br.ufrn.imd.pastora.persistence.repository.ExecutionRepository;
 import br.ufrn.imd.pastora.persistence.repository.MonitorRepository;
-import br.ufrn.imd.pastora.scheduler.factory.MonitorExecutionFactory;
+import br.ufrn.imd.pastora.usecases.CreateExecutionsByMonitorUseCase;
+import br.ufrn.imd.pastora.usecases.CreateExecutionsByOnFinishExecutionUseCase;
+import br.ufrn.imd.pastora.usecases.FinishRunningExecutionUseCase;
+import br.ufrn.imd.pastora.usecases.RunExecutionsUseCase;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.*;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class SchedulerExecutions {
-    final static Logger logger = LoggerFactory.getLogger(SchedulerExecutions.class);
+    private final static Logger logger = LoggerFactory.getLogger(SchedulerExecutions.class);
 
-    final MonitorRepository monitorRepository;
-    final ExecutionRepository executionRepository;
+    private final MonitorRepository monitorRepository;
+    private final ExecutionRepository executionRepository;
 
-    final ExecutorService executorService;
-    final MonitorExecutionFactory monitorExecutionFactory;
+    // private final Map<String, String> lockRunningMonitors = new ConcurrentHashMap<>();
+    private final HttpExecutor httpExecutor;
 
-    final Map<String, Future<ExecutionData>> lockRunningMonitors = new ConcurrentHashMap<>();
-
-    @Scheduled(initialDelay = 5,fixedRate = 60, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(initialDelay = 2,fixedRate = 60, timeUnit = TimeUnit.SECONDS)
     public void runMonitors() {
         logger.info("Executing scheduler tasks");
 
-        var monitorsInProgress = this.lockRunningMonitors.keySet();
-        logger.info("Running Monitors: {}", monitorsInProgress);
+        // var monitorsInProgress = this.lockRunningMonitors.keySet();
+        // logger.info("Running Monitors: {}", monitorsInProgress);
 
-        List<MonitorModel> monitorsToExec = monitorRepository.findMonitorModelByEnabledEqualsAndIdIsNotIn(true, monitorsInProgress);
+        List<MonitorModel> monitorsToExec = monitorRepository.findMonitorModelByEnabledEquals(true);
 
-        List<String> monitorIds = monitorsToExec.stream().map(MonitorModel::getId).toList();
-        for (var id : monitorIds) {
-            // Create the runner for Monitor
-            logger.info("Init monitors execution: {}", id);
-            var monitorTask = executorService.submit(monitorExecutionFactory.createMonitorRunner(id));
-            lockRunningMonitors.put(id, monitorTask);
+        // monitorsToExec.forEach((monitor) -> lockRunningMonitors.putIfAbsent(monitor.getId(), monitor.getId()));
 
-            // Handle when Runner finishes
-            executorService.submit(() -> {
-                try {
-                    var executionData = monitorTask.get();
-                    logger.info("Saving monitors execution: {}", id);
-                    saveExecution(executionData);
-                    logger.info("Removing for running monitors: {}", id);
-                    lockRunningMonitors.remove(id);
-                } catch (InterruptedException | ExecutionException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+        List<String> executionsIds = createExecutionForMonitors(monitorsToExec.stream().map(MonitorModel::getId).toList());
+        for (String executionId : executionsIds) {
+            CompletableFuture<ExecutionData> task = new RunExecutionsUseCase(executionRepository, monitorRepository, httpExecutor).execute(executionId);
+            task
+                .thenApply(executionData -> {
+                    logger.info("Finished execution {} ", executionId);
+                    new FinishRunningExecutionUseCase(executionRepository).execute(executionId, executionData);
+                    logger.info("Finished execution {} -> executing children", executionId);
+                    new CreateExecutionsByOnFinishExecutionUseCase(executionRepository, monitorRepository).execute(executionId);
+                    logger.info("Finished execution {} and children", executionId);
+                    return null;
+                });
         }
+        logger.info("Monitors are running...");
     }
 
-    public Integer saveExecution(ExecutionData executionData) {
-        var triggered = new ArrayList<Integer>();
-        if (executionData.getChildren() != null && !executionData.getChildren().isEmpty()) {
-            triggered.addAll(executionData.getChildren().stream().map(this::saveExecution).toList());
-        }
-
-        var model = ExecutionModel.fromExecutionData(executionData).withTriggered(triggered);
-
-
-        logger.info(" -> Saving monitors execution with {} triggered", triggered);
-        var modelSaved = executionRepository.save(model);
-        logger.info(" -> Saved execution {}", modelSaved.getId());
-
-
-        return modelSaved.getId();
+    public List<String> createExecutionForMonitors(List<String> monitorIds) {
+        return new CreateExecutionsByMonitorUseCase(executionRepository).execute(monitorIds);
     }
 
 }

@@ -16,22 +16,23 @@ import java.util.List;
 @With
 public class ExecutionModel {
     @Id
-    Integer id;
+    String id;
 
     Date startedTime;
     Date finishedTime;
 
     String monitorId;
-    List<Integer> triggered; // Monitor IDS that this one triggered
+    List<String> triggered; // Monitor IDS that this one triggered
     String data;
     List<ExecutionData.Error> errors;
+    ExecutionData.Status status;
 
     public static ExecutionModel fromExecutionData(ExecutionData executionData) {
         return ExecutionModel.builder()
-                .startedTime(executionData.getStartedTime())
-                .finishedTime(executionData.getFinishedTime())
+//                .startedTime(executionData.getStartedTime())
+                //.finishedTime(executionData.getFinishedTime())
                 .data(executionData.getData())
-                .errors(executionData.getErrors())
+                // .errors(executionData.getErrors())
                 .monitorId(executionData.getMonitorId())
                 .build();
     }
