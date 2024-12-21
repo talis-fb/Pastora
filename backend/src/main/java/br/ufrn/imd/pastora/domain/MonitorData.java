@@ -1,4 +1,4 @@
-package br.ufrn.imd.pastora.domain.monitor;
+package br.ufrn.imd.pastora.domain;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -23,6 +23,9 @@ public class MonitorData {
     protected final String userId;
 
     protected final String serviceId;
+
+    // Trigger
+    protected final Integer intervalRate;
 
     protected final List<String> onSuccess = new ArrayList<>();
     protected final List<String> onFail = new ArrayList<>();

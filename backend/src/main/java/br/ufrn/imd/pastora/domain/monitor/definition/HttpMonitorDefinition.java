@@ -6,11 +6,9 @@ import lombok.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@Data
-@EqualsAndHashCode(callSuper = false)
 @With
 @Builder
-public class HttpMonitorDefinition extends AbstractMonitorDefinition {
+public class HttpMonitorDefinition {
     //String id;
 
     // String KIND = "HTTP";

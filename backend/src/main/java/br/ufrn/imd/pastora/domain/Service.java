@@ -10,7 +10,7 @@ import lombok.With;
 @Builder
 public class Service {
     @NotNull
-    String name;
+    protected final String name;
 
     String userId;
     String description;
