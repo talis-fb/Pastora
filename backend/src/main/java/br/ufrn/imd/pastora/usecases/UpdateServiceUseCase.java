@@ -18,8 +18,8 @@ public class UpdateServiceUseCase {
 
 
   @Transactional(rollbackFor = Exception.class)
-  public Service execute(String id, Service service, MultipartFile photo) throws EntityNotFoundException{
-    final ServiceModel finded = this.serviceRepository.findById(id)
+  public Service execute(String id, Service service, MultipartFile photo, String userId) throws EntityNotFoundException{
+    final ServiceModel finded = this.serviceRepository.findByIdAndUserId(id, userId)
       .orElseThrow(() -> new EntityNotFoundException("no service found with this ID!"));
       
     // Remove o ícone antigo

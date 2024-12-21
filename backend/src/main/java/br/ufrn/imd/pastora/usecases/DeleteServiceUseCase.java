@@ -16,8 +16,8 @@ public class DeleteServiceUseCase {
   private final PhotoStorageComponent photoStorageComponent;
 
   @Transactional(rollbackFor = Exception.class)
-  public Service execute(String serviceId) throws EntityNotFoundException{
-    final ServiceModel serviceToDelete = this.serviceRepository.findById(serviceId)
+  public Service execute(String serviceId, String userId) throws EntityNotFoundException{
+    final ServiceModel serviceToDelete = this.serviceRepository.findByIdAndUserId(serviceId, userId)
       .orElseThrow(() -> new EntityNotFoundException("no service found with this ID!"));
 
     final String iconToDeleteUrl = serviceToDelete.getIconUrl();

@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 public class GetServiceUseCase {
   private final ServiceRepository serviceRepository;
 
-  public Optional<ServiceModel> execute(String id) {
-    return this.serviceRepository.findById(id);
+  public Optional<ServiceModel> execute(String id, String userId) {
+    return this.serviceRepository.findByIdAndUserId(id, userId);
   }
 }

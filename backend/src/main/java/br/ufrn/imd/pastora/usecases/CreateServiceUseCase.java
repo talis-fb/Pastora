@@ -19,7 +19,7 @@ public class CreateServiceUseCase {
     public String execute(Service service, MultipartFile photo) {
         if(photo != null && !photo.isEmpty()) {
             final String iconUrl = photoStorageComponent.storePhoto(photo);
-            // service.setIconUrl(iconUrl);
+            service.setIconUrl(iconUrl);
         }
         
         ServiceModel createdService = serviceRepository.save(ServiceModel.fromEntity(service));
