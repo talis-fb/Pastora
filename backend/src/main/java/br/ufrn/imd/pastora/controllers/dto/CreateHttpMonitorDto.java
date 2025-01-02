@@ -3,7 +3,6 @@ package br.ufrn.imd.pastora.controllers.dto;
 import br.ufrn.imd.pastora.domain.MonitorData;
 import br.ufrn.imd.pastora.domain.MonitorHttpDefinition;
 import br.ufrn.imd.pastora.domain.MonitorValidation;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 

@@ -87,4 +87,10 @@ public class PhotoStorageComponent {
       throw new RuntimeException("Error reading file: " + fileName, e);
     }
   }
+
+  public String getFilePath(String fileName) {
+    // Combina o diretório base com o nome do arquivo
+    Path filePath = Paths.get(uploadDir, fileName);
+    return filePath.toString();
+  }
 }

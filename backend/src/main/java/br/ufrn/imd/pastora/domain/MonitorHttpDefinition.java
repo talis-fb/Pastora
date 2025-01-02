@@ -5,7 +5,6 @@ import br.ufrn.imd.pastora.domain.http.HttpRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.With;
 
 import java.util.HashMap;
@@ -15,8 +14,6 @@ import java.util.Map;
 @With
 @Builder
 public class MonitorHttpDefinition  {
-    String id;
-
     @NotNull
     String url;
 

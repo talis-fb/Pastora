@@ -12,7 +12,8 @@ public class Service {
     @NotNull
     protected final String name;
 
-    protected final String description;
+    String userId;
+    String description;
 
-    protected final String iconUrl;
+    String iconUrl;
 }

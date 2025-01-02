@@ -4,5 +4,5 @@ import br.ufrn.imd.pastora.persistence.ExecutionModel;
 import org.springframework.data.repository.CrudRepository;
 
 public interface ExecutionRepository extends CrudRepository<ExecutionModel, String> {
-
+  Iterable<ExecutionModel> findByMonitorId(String monitorId);
 }

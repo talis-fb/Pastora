@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public class GetServicesUseCase {
   private final ServiceRepository serviceRepository;
 
-  public Iterable<ServiceModel> execute() {
-    return serviceRepository.findAll();    
+  public Iterable<ServiceModel> execute(String userId) {
+    return serviceRepository.findByUserId(userId);
   }
 }
