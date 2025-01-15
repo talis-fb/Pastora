@@ -36,22 +36,40 @@
 
     <!-- Services List -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 px-8">
-      <!-- Node Service -->
-      <ServiceCard name="Node Service" image="/path/to/node-logo.png"/>
-      <!-- Apache Server -->
-      <ServiceCard name="Apache Server" image="/path/to/apache-logo.png"/>
-      <!-- Rails API -->
-      <ServiceCard name="Rails API" image="/path/to/rails-logo.png" />
+      <!-- Iteração sobre os serviços para popular os cards -->
+      <ServiceCard v-for="service in services" :key="service.id" :name="service.name" :image="service.iconUrl" />
     </div>
   </div>
 </template>
 
 <script>
+import { ref, onMounted } from "vue"; // Importa os hooks da Composition API
 import ServiceCard from "@/components/ServiceCard.vue";
+import serviceApi from "@/api/servicesApi"; // Importe a API
 
 export default {
   components: {
     ServiceCard,
+  },
+  setup() {
+    // Cria a variável de serviços como uma referência reativa
+    const services = ref([]);
+    console.log(services);
+    // Função para carregar os serviços
+    const loadServices = async () => {
+      try {
+        services.value = await serviceApi.findServices();
+      } catch (error) {
+        console.error("Erro ao carregar serviços:", error);
+      }
+    };
+
+    // Chama a função para carregar os serviços quando o componente for montado
+    onMounted(loadServices);
+
+    return {
+      services,
+    };
   },
 };
 </script>
