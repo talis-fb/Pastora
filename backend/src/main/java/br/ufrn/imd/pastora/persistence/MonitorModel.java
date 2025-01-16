@@ -27,7 +27,6 @@ public class MonitorModel {
     String serviceId;
     List<String> onSuccess;
     List<String> onFail;
-    MonitorData.SaveSuccessWhen saveSuccessWhen;
 
     // Trigger
     Integer intervalRate;
@@ -45,7 +44,6 @@ public class MonitorModel {
                 .userId(data.getUserId())
                 .onSuccess(data.getOnSuccess())
                 .onFail(data.getOnFail())
-                .saveSuccessWhen(data.getSaveSuccessWhen())
                 .build();
     }
 

@@ -25,7 +25,6 @@ public class ExecutionData {
     }
 
     public enum Status {
-        IDLE,
         RUNNING,
         FINISHED,
     }

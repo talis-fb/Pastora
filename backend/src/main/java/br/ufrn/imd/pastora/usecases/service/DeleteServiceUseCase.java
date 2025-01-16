@@ -1,4 +1,4 @@
-package br.ufrn.imd.pastora.usecases;
+package br.ufrn.imd.pastora.usecases.service;
 
 import org.springframework.transaction.annotation.Transactional;
 

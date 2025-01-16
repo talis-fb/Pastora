@@ -1,4 +1,4 @@
-package br.ufrn.imd.pastora.usecases;
+package br.ufrn.imd.pastora.usecases.auth;
 
 import br.ufrn.imd.pastora.controllers.dto.SignUpDto;
 import br.ufrn.imd.pastora.exceptions.BusinessException;

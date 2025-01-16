@@ -1,4 +1,4 @@
-package br.ufrn.imd.pastora.usecases;
+package br.ufrn.imd.pastora.usecases.service;
 
 import br.ufrn.imd.pastora.components.PhotoStorageComponent;
 import br.ufrn.imd.pastora.exceptions.EntityNotFoundException;

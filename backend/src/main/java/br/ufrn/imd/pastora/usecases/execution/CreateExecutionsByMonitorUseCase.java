@@ -1,4 +1,4 @@
-package br.ufrn.imd.pastora.usecases;
+package br.ufrn.imd.pastora.usecases.execution;
 
 
 import br.ufrn.imd.pastora.domain.ExecutionData;
@@ -17,7 +17,7 @@ public class CreateExecutionsByMonitorUseCase {
         List<ExecutionModel> models = monitorIds.stream()
                 .map(monitorId -> ExecutionModel.builder()
                         .monitorId(monitorId)
-                        .status(ExecutionData.Status.IDLE)
+                        .status(ExecutionData.Status.RUNNING)
                         .build()
                 )
                 .toList();

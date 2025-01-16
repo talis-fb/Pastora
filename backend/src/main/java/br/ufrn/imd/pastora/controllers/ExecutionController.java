@@ -4,13 +4,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.ufrn.imd.pastora.persistence.ExecutionModel;
 import br.ufrn.imd.pastora.persistence.repository.ExecutionRepository;
 import br.ufrn.imd.pastora.persistence.repository.MonitorRepository;
-import br.ufrn.imd.pastora.usecases.GetExecutionsByMonitorUseCase;
+import br.ufrn.imd.pastora.usecases.execution.GetExecutionsByMonitorUseCase;
 import br.ufrn.imd.pastora.utils.AuthenticatedUserUtils;
 import lombok.AllArgsConstructor;
 

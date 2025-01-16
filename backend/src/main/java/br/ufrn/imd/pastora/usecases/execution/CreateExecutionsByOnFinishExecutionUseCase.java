@@ -1,4 +1,4 @@
-package br.ufrn.imd.pastora.usecases;
+package br.ufrn.imd.pastora.usecases.execution;
 
 import br.ufrn.imd.pastora.domain.ExecutionData;
 import br.ufrn.imd.pastora.persistence.ExecutionModel;

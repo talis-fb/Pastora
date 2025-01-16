@@ -1,4 +1,4 @@
-package br.ufrn.imd.pastora.usecases;
+package br.ufrn.imd.pastora.usecases.execution;
 
 import br.ufrn.imd.pastora.components.HttpExecutor;
 import br.ufrn.imd.pastora.domain.ExecutionData;

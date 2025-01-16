@@ -29,13 +29,4 @@ public class MonitorData {
 
     protected final List<String> onSuccess = new ArrayList<>();
     protected final List<String> onFail = new ArrayList<>();
-
-    @NotNull
-    protected final SaveSuccessWhen saveSuccessWhen = SaveSuccessWhen.SUCCESS;
-
-    public enum SaveSuccessWhen {
-        SUCCESS,
-        ALL_NEXT_SUCCESS,
-        ANY_NEXT_SUCCESS,
-    }
 }

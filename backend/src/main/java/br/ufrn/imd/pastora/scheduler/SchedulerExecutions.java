@@ -2,14 +2,13 @@ package br.ufrn.imd.pastora.scheduler;
 
 import br.ufrn.imd.pastora.components.HttpExecutor;
 import br.ufrn.imd.pastora.domain.ExecutionData;
-import br.ufrn.imd.pastora.persistence.ExecutionModel;
 import br.ufrn.imd.pastora.persistence.MonitorModel;
 import br.ufrn.imd.pastora.persistence.repository.ExecutionRepository;
 import br.ufrn.imd.pastora.persistence.repository.MonitorRepository;
-import br.ufrn.imd.pastora.usecases.CreateExecutionsByMonitorUseCase;
-import br.ufrn.imd.pastora.usecases.CreateExecutionsByOnFinishExecutionUseCase;
-import br.ufrn.imd.pastora.usecases.FinishRunningExecutionUseCase;
-import br.ufrn.imd.pastora.usecases.RunExecutionsUseCase;
+import br.ufrn.imd.pastora.usecases.execution.CreateExecutionsByMonitorUseCase;
+import br.ufrn.imd.pastora.usecases.execution.CreateExecutionsByOnFinishExecutionUseCase;
+import br.ufrn.imd.pastora.usecases.execution.FinishRunningExecutionUseCase;
+import br.ufrn.imd.pastora.usecases.execution.RunExecutionsUseCase;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,12 +33,7 @@ public class SchedulerExecutions {
     public void runMonitors() {
         logger.info("Executing scheduler tasks");
 
-        // var monitorsInProgress = this.lockRunningMonitors.keySet();
-        // logger.info("Running Monitors: {}", monitorsInProgress);
-
         List<MonitorModel> monitorsToExec = monitorRepository.findMonitorModelByEnabledEquals(true);
-
-        // monitorsToExec.forEach((monitor) -> lockRunningMonitors.putIfAbsent(monitor.getId(), monitor.getId()));
 
         List<String> executionsIds = createExecutionForMonitors(monitorsToExec.stream().map(MonitorModel::getId).toList());
         for (String executionId : executionsIds) {
