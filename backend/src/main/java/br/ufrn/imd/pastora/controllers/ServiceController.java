@@ -3,6 +3,7 @@ package br.ufrn.imd.pastora.controllers;
 import br.ufrn.imd.pastora.components.PhotoStorageComponent;
 import br.ufrn.imd.pastora.domain.Service;
 import br.ufrn.imd.pastora.exceptions.BusinessException;
+import br.ufrn.imd.pastora.exceptions.EntityNotFoundException;
 import br.ufrn.imd.pastora.persistence.ServiceModel;
 import br.ufrn.imd.pastora.persistence.repository.ServiceRepository;
 import br.ufrn.imd.pastora.usecases.CreateServiceUseCase;
@@ -18,8 +19,11 @@ import lombok.SneakyThrows;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -141,23 +145,36 @@ public class ServiceController {
 
     @SneakyThrows
     @GetMapping("/download-icon/{fileName}")
-    public ResponseEntity<byte[]> getPhoto(
-        @PathVariable String fileName
-    ) {
-        byte[] photoBytes = new GetServiceIconUseCase(photoStorageComponent).execute(fileName);
+    public ResponseEntity<Resource> getPhoto(@PathVariable String fileName) {
+        // Caminho completo do arquivo
+        Path filePath = Paths.get(photoStorageComponent.getFilePath(fileName)).normalize();
 
-        // Detectar o tipo MIME
-        String mimeType = Files.probeContentType(Path.of(photoStorageComponent.getFilePath(fileName)));
-        
+        // Verificar se o arquivo existe e é legível
+        if (!Files.exists(filePath) || !Files.isReadable(filePath)) {
+            throw new EntityNotFoundException("Arquivo não encontrado ou não pode ser lido: " + fileName);
+        }
+
+        // Criar um recurso a partir do arquivo
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (!resource.exists()) {
+            throw new EntityNotFoundException("Recurso não encontrado: " + fileName);
+        }
+
+        // Detectar o tipo MIME do arquivo
+        String mimeType = Files.probeContentType(filePath);
         if (mimeType == null) {
             mimeType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
         }
 
+        // Construir a resposta
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                //.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .header("attachment; filename=\"" + fileName + "\"")
                 .contentType(MediaType.parseMediaType(mimeType))
-                .body(photoBytes);
-    }    
+                .body(resource);
+    }
+   
 
     private void validatePhotoType(MultipartFile photo) throws BusinessException{
         if(photo != null && !photo.isEmpty()) {

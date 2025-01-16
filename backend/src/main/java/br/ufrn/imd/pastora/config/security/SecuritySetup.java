@@ -32,6 +32,7 @@ public class SecuritySetup {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/ping").permitAll()
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/services/download-icon/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
