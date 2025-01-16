@@ -27,7 +27,7 @@
         v-for="service in filteredServices"
         :key="service.id"
         :name="service.name"
-        :image="service.icon"
+        :image="service.iconUrl"
       />
     </div>
 
@@ -38,55 +38,37 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, computed, onMounted } from "vue";
 import ServiceCard from "@/components/ServiceCard.vue";
 import serviceApi from "@/api/servicesApi";
 
-export default {
-  name: "ServicesPage",
-  components: { ServiceCard },
-  setup() {
-    const services = ref([]);
-    const searchQuery = ref("");
+// Dados reativos
+const services = ref([]);
+const searchQuery = ref("");
 
-    // Função para carregar os serviços
-    const loadServices = async () => {
-      try {
-        const defaultIcon = new URL('@/assets/logo.png', import.meta.url).href;
-        const fetchedServices = await serviceApi.findServices();
-        // Para cada serviço, busca o ícone e adiciona ao serviço
-        for (let service of fetchedServices) {
-            service.icon = !!service?.iconUrl 
-              ? serviceApi.getFullIconUrl(service.iconUrl)
-              : defaultIcon;
-        }
-        services.value = fetchedServices;
-      } catch (error) {
-        console.error("Erro ao carregar serviços:", error);
-      }
-    };
-
-    // Serviços filtrados com base no texto de busca
-    const filteredServices = computed(() => {
-      return services.value.filter((service) =>
-        service.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-      );
-    });
-
-    // Função para adicionar um serviço
-    const addService = () => {
-      alert("A funcionalidade de adicionar serviço será implementada futuramente.");
-    };
-
-    onMounted(loadServices);
-
-    return {
-      services,
-      searchQuery,
-      filteredServices,
-      addService,
-    };
-  },
+// Função para carregar os serviços
+const loadServices = async () => {
+  try {
+    const fetchedServices = await serviceApi.findServices();
+    services.value = fetchedServices;
+  } catch (error) {
+    console.error("Erro ao carregar serviços:", error);
+  }
 };
+
+// Serviços filtrados com base no texto de busca
+const filteredServices = computed(() => {
+  return services.value.filter((service) =>
+    service.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+});
+
+// Função para adicionar um serviço
+const addService = () => {
+  alert("A funcionalidade de adicionar serviço será implementada futuramente.");
+};
+
+// Chamando a função ao montar o componente
+onMounted(loadServices);
 </script>

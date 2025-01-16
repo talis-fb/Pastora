@@ -8,13 +8,6 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import Menu from "@/components/Menu.vue";
-
-export default {
-  name: "Dashboard",
-  components: {
-    Menu,
-  },
-};
 </script>

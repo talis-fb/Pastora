@@ -5,8 +5,5 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "MonitorsPage",
-};
+<script setup>
 </script>
