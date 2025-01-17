@@ -1,5 +1,6 @@
 package br.ufrn.imd.pastora.usecases.service;
 
+import br.ufrn.imd.pastora.mappers.ServiceMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.ufrn.imd.pastora.components.PhotoStorageComponent;
@@ -14,6 +15,7 @@ public class DeleteServiceUseCase {
   private final ServiceRepository serviceRepository;
 
   private final PhotoStorageComponent photoStorageComponent;
+  private final ServiceMapper serviceMapper;
 
   @Transactional(rollbackFor = Exception.class)
   public Service execute(String serviceId, String userId) throws EntityNotFoundException{
@@ -26,6 +28,7 @@ public class DeleteServiceUseCase {
       this.photoStorageComponent.deletePhoto(iconToDeleteUrl);
     
     this.serviceRepository.delete(serviceToDelete);
-    return serviceToDelete.toEntity();
+    // use mapper
+    return serviceMapper.fromServiceModel(serviceToDelete); //serviceToDelete.toEntity();
   }
 }

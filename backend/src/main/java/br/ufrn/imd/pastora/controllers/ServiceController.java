@@ -4,6 +4,7 @@ import br.ufrn.imd.pastora.components.PhotoStorageComponent;
 import br.ufrn.imd.pastora.domain.Service;
 import br.ufrn.imd.pastora.exceptions.BusinessException;
 import br.ufrn.imd.pastora.exceptions.EntityNotFoundException;
+import br.ufrn.imd.pastora.mappers.ServiceMapper;
 import br.ufrn.imd.pastora.persistence.ServiceModel;
 import br.ufrn.imd.pastora.persistence.repository.ServiceRepository;
 import br.ufrn.imd.pastora.usecases.service.CreateServiceUseCase;
@@ -47,6 +48,7 @@ public class ServiceController {
     private ServiceRepository serviceRepository;
 
     private PhotoStorageComponent photoStorageComponent;
+    private final ServiceMapper serviceMapper;
 
     @SneakyThrows
     @PostMapping
@@ -67,7 +69,8 @@ public class ServiceController {
 
         final String createdServiceId = new CreateServiceUseCase(
             serviceRepository,
-            photoStorageComponent
+            photoStorageComponent,
+            serviceMapper
         ).execute(service, photo);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdServiceId);
@@ -92,7 +95,8 @@ public class ServiceController {
 
         final Service updated = new UpdateServiceUseCase(
             serviceRepository,
-            photoStorageComponent
+            photoStorageComponent,
+            serviceMapper
         ).execute(id, service, photo, userId);
 
         return ResponseEntity.ok(updated);
@@ -107,7 +111,8 @@ public class ServiceController {
 
         final Service deletedService = new DeleteServiceUseCase(
             serviceRepository,
-            photoStorageComponent
+            photoStorageComponent,
+            serviceMapper
         ).execute(id, userId);
 
         return ResponseEntity.ok(deletedService);

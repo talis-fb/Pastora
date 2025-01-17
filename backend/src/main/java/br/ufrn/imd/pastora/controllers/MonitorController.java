@@ -1,6 +1,8 @@
 package br.ufrn.imd.pastora.controllers;
 
 import br.ufrn.imd.pastora.controllers.dto.CreateHttpMonitorDto;
+import br.ufrn.imd.pastora.domain.MonitorData;
+import br.ufrn.imd.pastora.mappers.MonitorMapper;
 import br.ufrn.imd.pastora.persistence.MonitorModel;
 import br.ufrn.imd.pastora.persistence.repository.MonitorRepository;
 import br.ufrn.imd.pastora.persistence.repository.ServiceRepository;
@@ -31,19 +33,17 @@ public class MonitorController {
     private AuthenticatedUserUtils authenticatedUserUtils;
     private MonitorRepository monitorRepository;
     private ServiceRepository serviceRepository;
+    private final MonitorMapper monitorMapper;
 
     @SneakyThrows
     @PostMapping("http")
-    public ResponseEntity<String> createMonitor(@Valid @RequestBody CreateHttpMonitorDto monitorDto) {
+    public ResponseEntity<String> createMonitor(@Valid @RequestBody MonitorData monitorData) {
         final String userId = authenticatedUserUtils.getAuthenticatedUserId();
         
         final String createdId = new CreateMonitorUseCase(
-            monitorRepository
-        ).execute(
-            monitorDto.getData().withUserId(userId),
-            monitorDto.getDefinition(),
-            monitorDto.getValidations()
-        );
+            monitorRepository,
+            monitorMapper
+        ).execute(monitorData);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdId);
     }

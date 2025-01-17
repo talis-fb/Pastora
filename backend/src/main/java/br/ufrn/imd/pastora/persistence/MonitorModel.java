@@ -1,8 +1,8 @@
 package br.ufrn.imd.pastora.persistence;
 
 import br.ufrn.imd.pastora.domain.MonitorData;
-import br.ufrn.imd.pastora.domain.MonitorValidation;
-import br.ufrn.imd.pastora.domain.MonitorHttpDefinition;
+import br.ufrn.imd.pastora.domain.monitor.MonitorValidation;
+import br.ufrn.imd.pastora.domain.monitor.MonitorHttpDefinition;
 import lombok.Builder;
 import lombok.Value;
 import lombok.With;
@@ -34,24 +34,4 @@ public class MonitorModel {
     // Definitions
     MonitorHttpDefinition definition;
     List<MonitorValidation> validations;
-
-    public static MonitorModel fromMonitorData(MonitorData data) {
-        return MonitorModel.builder()
-                .name(data.getName())
-                .description(data.getDescription())
-                .enabled(data.getEnabled())
-                .serviceId(data.getServiceId())
-                .userId(data.getUserId())
-                .onSuccess(data.getOnSuccess())
-                .onFail(data.getOnFail())
-                .build();
-    }
-
-    public MonitorData toMonitorData() {
-        return MonitorData.builder()
-            .name(this.getName())
-            .description(this.getDescription())
-            .serviceId(this.getServiceId())
-            .build();
-    }
 }
