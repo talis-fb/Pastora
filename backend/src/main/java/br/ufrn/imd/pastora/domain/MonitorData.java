@@ -1,5 +1,7 @@
 package br.ufrn.imd.pastora.domain;
 
+import br.ufrn.imd.pastora.domain.monitor.MonitorHttpDefinition;
+import br.ufrn.imd.pastora.domain.monitor.MonitorValidation;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
@@ -24,8 +26,12 @@ public class MonitorData {
 
     protected final String serviceId;
 
-    // Trigger
     protected final Integer intervalRate;
+
+    @NotNull
+    MonitorHttpDefinition http;
+
+    List<MonitorValidation> validations;
 
     protected final List<String> onSuccess = new ArrayList<>();
     protected final List<String> onFail = new ArrayList<>();

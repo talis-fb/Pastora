@@ -1,4 +1,4 @@
-package br.ufrn.imd.pastora.domain;
+package br.ufrn.imd.pastora.domain.monitor;
 
 import br.ufrn.imd.pastora.domain.http.HttpMethod;
 import br.ufrn.imd.pastora.domain.http.HttpRequest;

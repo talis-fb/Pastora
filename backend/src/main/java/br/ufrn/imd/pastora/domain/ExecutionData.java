@@ -16,7 +16,7 @@ public class ExecutionData {
 
     protected final String monitorId;
     protected final String data;
-    protected final List<ExecutionData.Error> errors;
+    protected final List<String> errors;
     protected final ExecutionData.Status status;
 
     public static class Error {
