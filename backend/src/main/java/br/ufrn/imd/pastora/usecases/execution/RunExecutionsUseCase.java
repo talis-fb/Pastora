@@ -2,16 +2,17 @@ package br.ufrn.imd.pastora.usecases.execution;
 
 import br.ufrn.imd.pastora.components.HttpExecutor;
 import br.ufrn.imd.pastora.domain.ExecutionData;
-import br.ufrn.imd.pastora.domain.MonitorHttpDefinition;
-import br.ufrn.imd.pastora.domain.http.HttpRequest;
 import br.ufrn.imd.pastora.domain.http.HttpResponse;
 import br.ufrn.imd.pastora.persistence.ExecutionModel;
 import br.ufrn.imd.pastora.persistence.MonitorModel;
 import br.ufrn.imd.pastora.persistence.repository.ExecutionRepository;
 import br.ufrn.imd.pastora.persistence.repository.MonitorRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.With;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
@@ -20,37 +21,44 @@ public class RunExecutionsUseCase {
     private final MonitorRepository monitorRepository;
     private final HttpExecutor httpExecutor;
 
-    public CompletableFuture<ExecutionData> execute(String executionId) {
-        ExecutionModel execution = executionRepository.findById(executionId).orElseThrow();
-        MonitorModel monitor = monitorRepository.findById(execution.getMonitorId()).orElseThrow();
+    @With
+    private record TaskContext(ExecutionModel execution, MonitorModel monitor, HttpResponse response) {
+    }
 
-        var future = CompletableFuture.supplyAsync(() -> {
-            MonitorHttpDefinition definition = monitor.getDefinition();
-            Date startTime = new Date();
-            HttpRequest request = definition.toHttpRequest();
-            Date finishTime = new Date();
-            HttpResponse response = httpExecutor.submitRequest(request);
+    public Iterable<CompletableFuture<ExecutionModel>> execute(List<String> monitorIds) {
+        Date startTime = new Date();
 
-            // TODO: Validations
+        return monitorIds
+                .parallelStream()
+                .map(monitorId -> {
+                    var monitorModel = monitorRepository.findById(monitorId).orElseThrow();
 
-            ExecutionModel model = executionRepository.findById(executionId)
-                    .orElseThrow().withStatus(ExecutionData.Status.RUNNING)
-                    .withStartedTime(startTime)
-                    .withFinishedTime(finishTime)
-                    .withData(response.getBody());
+                    var execution = ExecutionModel.builder()
+                            .startedTime(startTime)
+                            .monitorId(monitorModel.getId())
+                            .status(ExecutionData.Status.RUNNING)
+                            .errors(new ArrayList<>())
+                            .build();
 
-            executionRepository.save(model);
+                    ExecutionModel createdExecutionModel = executionRepository.save(execution);
 
-            return ExecutionData.builder()
-                    .data(response.getBody())
-                    .finishedTime(finishTime)
-                    .startedTime(startTime)
-                    .monitorId(monitor.getId())
-                    .status(ExecutionData.Status.RUNNING)
-                    .build();
-        });
-        executionRepository.save(execution.withStatus(ExecutionData.Status.RUNNING));
-
-        return future;
+                    return new TaskContext(createdExecutionModel, monitorModel, null);
+                })
+                .map(CompletableFuture::completedFuture)
+                .map(f -> f.thenApply(pairExecutionMonitor -> {
+                    var monitor = pairExecutionMonitor.monitor();
+                    var request = monitor.getDefinition().toHttpRequest();
+                    var response = httpExecutor.submitRequest(request);
+                    return pairExecutionMonitor.withResponse(response);
+                }))
+                .map(f -> f.thenApply(pairExecutionMonitor -> {
+                    // TODO: VALIDATIONS
+                    return pairExecutionMonitor;
+                }))
+                .map(f -> f.thenApply(pairExecutionMonitor -> {
+                    Date finishTime = new Date();
+                    return pairExecutionMonitor.execution().withFinishedTime(finishTime);
+                }))
+                .toList();
     }
 }
