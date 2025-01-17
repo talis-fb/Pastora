@@ -19,6 +19,7 @@ public class MonitorData {
     protected final String description;
 
     @NotNull
+    @Builder.Default
     protected final Boolean enabled = true;
 
     @NotNull
@@ -30,9 +31,13 @@ public class MonitorData {
 
     @NotNull
     MonitorHttpDefinition http;
+    
+    @Builder.Default
+    List<MonitorValidation> validations = new ArrayList<>();
 
-    List<MonitorValidation> validations;
-
+    @Builder.Default
     protected final List<String> onSuccess = new ArrayList<>();
+
+    @Builder.Default
     protected final List<String> onFail = new ArrayList<>();
 }

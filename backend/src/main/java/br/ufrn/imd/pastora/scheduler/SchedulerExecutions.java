@@ -36,6 +36,7 @@ public class SchedulerExecutions {
             case 0 -> 60;
             case Integer n -> n;
         };
+        logger.info("\t Current minute {}", currentMinutes);
 
         List<String> monitorsToExec = monitorRepository
                 .findMonitorModelByEnabledEquals(true)
@@ -44,11 +45,16 @@ public class SchedulerExecutions {
                 .map(MonitorModel::getId)
                 .toList();
 
+        logger.info("\t Monitors to execure: {}", monitorsToExec.size());
+        logger.info("\t \t -> {}", monitorsToExec);
+
+
         var tasks = new RunExecutionsUseCase(executionRepository, monitorRepository, httpExecutor).execute(monitorsToExec);
 
         tasks.forEach(future -> {
             future.thenAccept(executionModel -> {
                 new FinishRunningExecutionUseCase(executionRepository).execute(executionModel);
+                logger.info("\t \t -> monitor {} finished", executionModel.getMonitorId());
             }).exceptionally(ex -> {
                 System.out.println("Error at Scheduler Execution: " + ex.getMessage());
                 return null;

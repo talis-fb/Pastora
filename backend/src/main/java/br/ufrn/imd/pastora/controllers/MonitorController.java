@@ -33,7 +33,7 @@ public class MonitorController {
     private AuthenticatedUserUtils authenticatedUserUtils;
     private MonitorRepository monitorRepository;
     private ServiceRepository serviceRepository;
-    private final MonitorMapper monitorMapper;
+    private MonitorMapper monitorMapper;
 
     @SneakyThrows
     @PostMapping("http")

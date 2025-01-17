@@ -68,7 +68,6 @@ public class ServiceController {
             .build();
 
         final String createdServiceId = new CreateServiceUseCase(
-            serviceRepository,
             photoStorageComponent,
             serviceMapper
         ).execute(service, photo);

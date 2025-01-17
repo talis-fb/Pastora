@@ -20,7 +20,9 @@ public class MonitorHttpDefinition  {
     @NotNull
     HttpMethod method;
 
+    @Builder.Default
     Map<String, String> headers = new HashMap<>();
+
     String body;
 
     public HttpRequest toHttpRequest() {
