@@ -42,7 +42,6 @@ public class UpdateServiceUseCase {
       .withIconUrl(newIconUrl);
 
     final ServiceModel updated = serviceRepository.save(serviceToUpdate);
-    // use mapper
-    return serviceMapper.fromServiceModel(updated); //updated.toEntity();
+    return serviceMapper.fromServiceModel(updated);
   } 
 }

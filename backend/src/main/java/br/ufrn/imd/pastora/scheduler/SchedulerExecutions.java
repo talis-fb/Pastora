@@ -41,13 +41,12 @@ public class SchedulerExecutions {
         List<String> monitorsToExec = monitorRepository
                 .findMonitorModelByEnabledEquals(true)
                 .parallelStream()
+                .filter(monitor -> monitor.getIntervalRate() > 0)
                 .filter(monitor -> (currentMinutes % monitor.getIntervalRate()) == 0)
                 .map(MonitorModel::getId)
                 .toList();
 
-        logger.info("\t Monitors to execure: {}", monitorsToExec.size());
-        logger.info("\t \t -> {}", monitorsToExec);
-
+        logger.info("\t Monitors to execure: {} -> {}", monitorsToExec.size(), monitorsToExec);
 
         var tasks = new RunExecutionsUseCase(executionRepository, monitorRepository, httpExecutor).execute(monitorsToExec);
 

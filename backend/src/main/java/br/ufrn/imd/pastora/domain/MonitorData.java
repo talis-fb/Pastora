@@ -3,6 +3,7 @@ package br.ufrn.imd.pastora.domain;
 import br.ufrn.imd.pastora.domain.monitor.MonitorHttpDefinition;
 import br.ufrn.imd.pastora.domain.monitor.MonitorValidation;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Data;
 import lombok.With;
@@ -27,6 +28,7 @@ public class MonitorData {
 
     protected final String serviceId;
 
+    @Positive
     protected final Integer intervalRate;
 
     @NotNull

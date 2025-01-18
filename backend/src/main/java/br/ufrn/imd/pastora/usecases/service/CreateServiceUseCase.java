@@ -1,6 +1,7 @@
 package br.ufrn.imd.pastora.usecases.service;
 
 import br.ufrn.imd.pastora.mappers.ServiceMapper;
+import br.ufrn.imd.pastora.persistence.repository.ServiceRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class CreateServiceUseCase {
+    private final ServiceRepository serviceRepository;
     private final PhotoStorageComponent photoStorageComponent;
     private final ServiceMapper serviceMapper;
 
@@ -20,8 +22,7 @@ public class CreateServiceUseCase {
             final String iconUrl = photoStorageComponent.storePhoto(photo);
             service.setIconUrl(iconUrl);
         }
-        
-        ServiceModel createdService = serviceMapper.toServiceModel(service); // serviceRepository.save(ServiceModel.fromEntity(service));
+        ServiceModel createdService = serviceRepository.save(serviceMapper.toServiceModel(service));
         return createdService.getId();
     }
 }
