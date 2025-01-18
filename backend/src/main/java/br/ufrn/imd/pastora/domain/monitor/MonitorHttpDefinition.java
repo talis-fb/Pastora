@@ -21,6 +21,7 @@ public class MonitorHttpDefinition  {
     HttpMethod method;
 
     @Builder.Default
+    @NotNull
     Map<String, String> headers = new HashMap<>();
 
     String body;

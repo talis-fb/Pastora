@@ -29,20 +29,25 @@ public class MonitorData {
     protected final String serviceId;
 
     @Positive
+    @NotNull
     protected final Integer intervalRate;
 
     @Valid
+    @NotNull
     MonitorHttpDefinition http;
 
     @Builder.Default
     @Valid
+    @NotNull
     List<MonitorValidation> validations = new ArrayList<>();
 
     @Builder.Default
     @Valid
+    @NotNull
     protected final List<String> onSuccess = new ArrayList<>();
 
     @Builder.Default
     @Valid
+    @NotNull
     protected final List<String> onFail = new ArrayList<>();
 }

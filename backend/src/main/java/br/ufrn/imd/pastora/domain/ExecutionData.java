@@ -1,6 +1,7 @@
 package br.ufrn.imd.pastora.domain;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.With;
@@ -21,9 +22,11 @@ public class ExecutionData {
 
     @Valid
     @Builder.Default
+    @NotNull
     protected final List<String> errors = new ArrayList<>();
 
     @Valid
+    @NotNull
     protected final ExecutionData.Status status;
     public enum Status {
         RUNNING,
