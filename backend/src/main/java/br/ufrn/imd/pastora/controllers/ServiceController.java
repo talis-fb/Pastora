@@ -4,6 +4,7 @@ import br.ufrn.imd.pastora.components.PhotoStorageComponent;
 import br.ufrn.imd.pastora.domain.Service;
 import br.ufrn.imd.pastora.exceptions.BusinessException;
 import br.ufrn.imd.pastora.exceptions.EntityNotFoundException;
+import br.ufrn.imd.pastora.exceptions.UserNotAuthenticatedException;
 import br.ufrn.imd.pastora.mappers.ServiceMapper;
 import br.ufrn.imd.pastora.persistence.ServiceModel;
 import br.ufrn.imd.pastora.persistence.repository.ServiceRepository;
@@ -23,6 +24,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -50,14 +53,18 @@ public class ServiceController {
     private PhotoStorageComponent photoStorageComponent;
     private final ServiceMapper serviceMapper;
 
-    @SneakyThrows
+    private final Logger logger = LoggerFactory.getLogger(ServiceController.class);
+
+
     @PostMapping
     public ResponseEntity<String> createService(
         @RequestParam(required = true) String name,
         @RequestParam (required = false) String description,
         @RequestParam (required = false) MultipartFile photo
-    ) {
+    ) throws UserNotAuthenticatedException, BusinessException {
+        logger.info("Creating new service");
         final String userId = this.authenticatedUserUtils.getAuthenticatedUserId();
+        logger.info("User ID: {}", userId);
 
         this.validatePhotoType(photo);
         final Service service = Service.builder()
@@ -67,10 +74,17 @@ public class ServiceController {
             .userId(userId)
             .build();
 
+        logger.info("Service to create {}, {}", service.getName(), service.getDescription());
+
+
         final String createdServiceId = new CreateServiceUseCase(
+            serviceRepository,
             photoStorageComponent,
             serviceMapper
         ).execute(service, photo);
+
+        logger.info("Created Service ID: {}", createdServiceId);
+
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdServiceId);
     }
@@ -83,6 +97,7 @@ public class ServiceController {
         @RequestParam (required = false) String description,
         @RequestParam (required = false) MultipartFile photo        
     ) {
+        logger.debug("Updating service: {}", id);
         final String userId = this.authenticatedUserUtils.getAuthenticatedUserId();
 
         this.validatePhotoType(photo);
