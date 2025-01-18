@@ -8,24 +8,41 @@ interface ServiceType {
   iconUrl: string;
 }
 
+interface CreateServiceDto {
+  name: string;
+  icon: File;
+}
+
 const serviceApi = {
   async findServices() {
     try {
-      //const token = sessionStorage.getItem("access_token");
-      const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0ZUBleGFtcGxlLmNvbSIsInVzZXJJZCI6IjY3ODkxY2ViMDMwNDkwMmZmZGE1NGU3MCIsImlhdCI6MTczNzAzOTk0OSwiZXhwIjoxNzM3MTI2MzQ5fQ.6eAct0F0A4P_rivHTD-TVQUzyso--JiShM31P05Ro1IOUtXvJ3GGxvsCXtSpSKEMDUHfizCtvtLA3zSPv7FQ1A";
-
-      const response = await api.get("/services", { headers: { 'Authorization': `Bearer ${token}` }});
+      const response = await api.get("/services");
       return response.data;
     } catch (error: any) {
       return error.message;
     }
   },
+
+  async createService(data: CreateServiceDto) {
+    const formData = new FormData();
+    formData.append('name', data.name);
+    formData.append('icon', data.icon);
+    
+    try {
+      const response = await api.post("/services", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw error;
+    }
+  },
   
   getFullIconUrl(iconUrl: string) {
     try{
-      //const token = sessionStorage.getItem("access_token");
       const baseURL = import.meta.env.VITE_API_URL;
-
       return baseURL+`/services/download-icon/${iconUrl}`;
     }catch(error: any) {
       return error.message;

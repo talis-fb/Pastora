@@ -1,15 +1,11 @@
 <template>
-  <!-- <router-view /> -->
-  <Dashboard/>
+  <router-view v-if="!authStore.token" />
+  <Dashboard v-else />
 </template>
 
-<script>
+<script setup>
+import { useAuthStore } from '@/stores/auth';
 import Dashboard from './views/Dashboard.vue';
 
-export default {
-  name: "App",
-  components: {
-    Dashboard
-  }
-};
+const authStore = useAuthStore();
 </script>

@@ -35,17 +35,24 @@
     <div v-else class="text-center text-lg text-[#94A3B8]">
       Nenhum serviço encontrado.
     </div>
+
+    <AddServiceModal 
+      ref="addServiceModalRef"
+      @service-added="handleServiceAdded"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import ServiceCard from "@/components/ServiceCard.vue";
+import AddServiceModal from "@/components/AddServiceModal.vue"; 
 import serviceApi from "@/api/servicesApi";
 
 // Dados reativos
 const services = ref([]);
 const searchQuery = ref("");
+const addServiceModalRef = ref();
 
 // Função para carregar os serviços
 const loadServices = async () => {
@@ -66,7 +73,11 @@ const filteredServices = computed(() => {
 
 // Função para adicionar um serviço
 const addService = () => {
-  alert("A funcionalidade de adicionar serviço será implementada futuramente.");
+  addServiceModalRef.value.dialog = true;
+};
+
+const handleServiceAdded = async () => {
+  await loadServices();
 };
 
 // Chamando a função ao montar o componente
