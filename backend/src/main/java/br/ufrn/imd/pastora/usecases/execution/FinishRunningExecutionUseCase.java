@@ -1,16 +1,34 @@
 package br.ufrn.imd.pastora.usecases.execution;
 
+import br.ufrn.imd.pastora.components.HttpExecutor;
 import br.ufrn.imd.pastora.domain.ExecutionData;
-import br.ufrn.imd.pastora.mappers.ExecutionMapper;
 import br.ufrn.imd.pastora.persistence.ExecutionModel;
 import br.ufrn.imd.pastora.persistence.repository.ExecutionRepository;
+import br.ufrn.imd.pastora.persistence.repository.MonitorRepository;
 import lombok.RequiredArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class FinishRunningExecutionUseCase {
     private final ExecutionRepository executionRepository;
+    private final MonitorRepository monitorRepository;
+    private final HttpExecutor httpExecutor;
 
-    public void execute(ExecutionModel executionModel) {
+    public List<String> execute(ExecutionModel executionModel) {
         executionRepository.save(executionModel.withStatus(ExecutionData.Status.FINISHED));
+
+        boolean finishedSucceed = executionModel.getErrors().isEmpty();
+        var monitorsOnFinish = monitorRepository
+                .findById(executionModel.getMonitorId())
+                .map(monitor -> finishedSucceed ? monitor.getOnSuccess() : monitor.getOnFail())
+                .orElse(new ArrayList<>());
+
+        if (!monitorsOnFinish.isEmpty()) {
+            new RunExecutionsUseCase(executionRepository, monitorRepository, httpExecutor).execute(monitorsOnFinish);
+        }
+
+        return monitorsOnFinish;
     }
 }
