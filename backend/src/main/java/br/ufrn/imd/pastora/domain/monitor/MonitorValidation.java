@@ -11,17 +11,24 @@ import lombok.With;
 @Builder
 public class MonitorValidation {
     @NotNull
-    protected final String field; // e.g., "status", "url", "method", "body", "headers"
-
     @Valid
-    @NotNull
-    protected final Operation operation;
-    @NotNull
-    protected final Object value; // e.g., expected value or pattern
-
-    public enum Operation {
-        EQUALS,
-        NOT_EQUALS,
-        CONTAINS,
+    protected final Field field;
+    public enum Field {
+        status,
+        body
     }
+
+
+    @NotNull
+    @Valid
+    protected final Operation operation;
+    public enum Operation {
+        equals,
+        not_equals,
+        contains,
+    }
+
+
+    @NotNull
+    protected final String value; // e.g., expected value or pattern
 }

@@ -1,6 +1,7 @@
 package br.ufrn.imd.pastora.usecases.execution;
 
 import br.ufrn.imd.pastora.components.HttpExecutor;
+import br.ufrn.imd.pastora.components.ValidatorHttpResponse;
 import br.ufrn.imd.pastora.domain.ExecutionData;
 import br.ufrn.imd.pastora.domain.http.HttpResponse;
 import br.ufrn.imd.pastora.persistence.ExecutionModel;
@@ -20,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 public class RunExecutionsUseCase {
-    final static Logger logger = LoggerFactory.getLogger(HttpExecutor.class);
+    final static Logger logger = LoggerFactory.getLogger(RunExecutionsUseCase.class);
 
     private final ExecutionRepository executionRepository;
     private final MonitorRepository monitorRepository;
@@ -34,65 +35,27 @@ public class RunExecutionsUseCase {
     ) {}
 
     public Iterable<CompletableFuture<Boolean>> execute(List<String> monitorIds) {
-        Date startTime = new Date();
-
         return monitorIds
                 .parallelStream()
-                .map(monitorId -> {
-                    var monitorModel = monitorRepository.findById(monitorId).orElseThrow();
+                .map(this::createTaskContextByMonitorId)
+                .map(taskContext -> CompletableFuture.completedFuture(taskContext)
+                    .thenApply(this::submitHttpRequest)
+                    .thenApply(this::validateHttpResponse)
+                    .thenApply(this::setFinishTime)
+                    .thenApply(this::setExecutionAsFinished)
+                    .thenApply(this::setExecutionAsFinished)
+                    .thenApply(ctx -> {
+                        var execution = ctx.execution();
+                        logger.info("\t \t -> monitor {} finished with {} errors", execution.getMonitorId(), execution.getErrors().size());
 
-                    var execution = ExecutionModel.builder()
-                            .startedTime(startTime)
-                            .monitorId(monitorModel.getId())
-                            .status(ExecutionData.Status.RUNNING)
-                            .errors(new ArrayList<>())
-                            .build();
-
-                    ExecutionModel createdExecutionModel = executionRepository.save(execution);
-
-                    return new TaskContext(createdExecutionModel, monitorModel, null);
-                })
-                .map(CompletableFuture::completedFuture)
-                .map(f -> f
-                    .thenApply(taskContext -> {
-                        /// --------------------
-                        /// Http request
-                        /// --------------------
-                        var monitor = taskContext.monitor();
-                        var request = monitor.getHttp().toHttpRequest();
-                        var response = httpExecutor.submitRequest(request);
-                        return taskContext.withResponse(response);
-                    })
-                    .thenApply(taskContext -> {
-                        /// --------------------
-                        /// Validation
-                        /// --------------------
-                        var validator = new ValidatorHttpResponse(taskContext.response());
-                        var errors = taskContext
-                                .monitor()
-                                .getValidations()
-                                .parallelStream()
-                                .map(validator::validateForError)
-                                .filter(Optional::isPresent)
-                                .map(Optional::get)
-                                .toList();
-
-                        return taskContext.execution().withErrors(errors);
-                    })
-                    .thenApply(executionModel -> {
-                        /// --------------------
-                        /// Set finish time
-                        /// --------------------
-                        Date finishTime = new Date();
-                        return executionModel.withFinishedTime(finishTime);
-                    })
-                    .thenApply(executionModel -> {
-                        logger.info("\t \t -> monitor {} finished with {} errors", executionModel.getMonitorId(), executionModel.getErrors().size());
-                        var monitorsToExecOnFinish = new FinishRunningExecutionUseCase(executionRepository, monitorRepository, httpExecutor).execute(executionModel);
+                        List<String> monitorsToExecOnFinish = this.getOnFinishMonitors(ctx);
 
                         if (!monitorsToExecOnFinish.isEmpty()) {
                             logger.info("\t \t \t -> executing on Finish: {}", monitorsToExecOnFinish);
                         }
+
+                        // Call itself to run on finished monitors
+                        new RunExecutionsUseCase(executionRepository, monitorRepository, httpExecutor).execute(monitorsToExecOnFinish);
 
                         return true;
                     })
@@ -102,5 +65,58 @@ public class RunExecutionsUseCase {
                     })
                 )
                 .toList();
+    }
+
+    private TaskContext createTaskContextByMonitorId(String monitorId) {
+        Date startTime = new Date();
+        var monitorModel = monitorRepository.findById(monitorId).orElseThrow();
+
+        var execution = ExecutionModel.builder()
+                .startedTime(startTime)
+                .monitorId(monitorModel.getId())
+                .status(ExecutionData.Status.RUNNING)
+                .errors(new ArrayList<>())
+                .build();
+
+        ExecutionModel createdExecutionModel = executionRepository.save(execution);
+
+        return new TaskContext(createdExecutionModel, monitorModel, null);
+    }
+
+    private TaskContext submitHttpRequest(TaskContext taskContext) {
+        var monitor = taskContext.monitor();
+        var request = monitor.getHttp().toHttpRequest();
+        var response = httpExecutor.submitRequest(request);
+        return taskContext.withResponse(response);
+    }
+
+    private TaskContext validateHttpResponse(TaskContext taskContext) {
+        var validator = new ValidatorHttpResponse(taskContext.response());
+        var errors = taskContext
+                .monitor()
+                .getValidations()
+                .parallelStream()
+                .map(validator::validateForError)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+
+        var newExecution = taskContext.execution().withErrors(errors);
+        return taskContext.withExecution(newExecution);
+    }
+
+    private TaskContext setFinishTime(TaskContext taskContext) {
+        Date finishTime = new Date();
+        var newExecution = taskContext.execution().withFinishedTime(finishTime);
+        return taskContext.withExecution(newExecution);
+    }
+
+    private TaskContext setExecutionAsFinished(TaskContext taskContext) {
+        new FinishRunningExecutionUseCase(executionRepository).execute(taskContext.execution());
+        return taskContext;
+    }
+
+    private List<String> getOnFinishMonitors(TaskContext taskContext) {
+        return new GetOnFinishMonitorsOfExecutionUseCase(monitorRepository).execute(taskContext.execution());
     }
 }
