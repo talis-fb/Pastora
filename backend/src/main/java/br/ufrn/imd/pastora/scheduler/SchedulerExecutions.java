@@ -48,18 +48,7 @@ public class SchedulerExecutions {
 
         logger.info("\t Monitors to execure: {} -> {}", monitorsToExec.size(), monitorsToExec);
 
-        var tasks = new RunExecutionsUseCase(executionRepository, monitorRepository, httpExecutor).execute(monitorsToExec);
-
-        tasks.forEach(future -> {
-            future.thenAccept(executionModel -> {
-                new FinishRunningExecutionUseCase(executionRepository).execute(executionModel);
-                logger.info("\t \t -> monitor {} finished", executionModel.getMonitorId());
-            }).exceptionally(ex -> {
-                System.out.println("Error at Scheduler Execution: " + ex.getMessage());
-                return null;
-            });
-        });
-
+        new RunExecutionsUseCase(executionRepository, monitorRepository, httpExecutor).execute(monitorsToExec);
         logger.info("Monitors are running...");
     }
 

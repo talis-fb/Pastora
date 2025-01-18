@@ -32,6 +32,6 @@ public class MonitorModel {
     Integer intervalRate;
 
     // Definitions
-    MonitorHttpDefinition definition;
+    MonitorHttpDefinition http;
     List<MonitorValidation> validations;
 }
