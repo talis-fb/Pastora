@@ -52,10 +52,11 @@ public class RunExecutionsUseCase {
 
                         if (!monitorsToExecOnFinish.isEmpty()) {
                             logger.info("\t \t \t -> executing on Finish: {}", monitorsToExecOnFinish);
+                            
+                            // Call itself to run on finished monitors
+                            new RunExecutionsUseCase(executionRepository, monitorRepository, httpExecutor).execute(monitorsToExecOnFinish);
                         }
 
-                        // Call itself to run on finished monitors
-                        new RunExecutionsUseCase(executionRepository, monitorRepository, httpExecutor).execute(monitorsToExecOnFinish);
 
                         return true;
                     })
