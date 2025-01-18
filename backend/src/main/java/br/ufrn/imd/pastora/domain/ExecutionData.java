@@ -1,5 +1,6 @@
 package br.ufrn.imd.pastora.domain;
 
+import jakarta.validation.Valid;
 import lombok.Builder;
 import lombok.Data;
 import lombok.With;
@@ -18,16 +19,12 @@ public class ExecutionData {
     protected final String monitorId;
     protected final String data;
 
+    @Valid
     @Builder.Default
     protected final List<String> errors = new ArrayList<>();
 
+    @Valid
     protected final ExecutionData.Status status;
-
-    public static class Error {
-        String message;
-        String validationId;
-    }
-
     public enum Status {
         RUNNING,
         FINISHED,

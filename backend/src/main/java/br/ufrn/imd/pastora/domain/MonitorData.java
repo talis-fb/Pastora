@@ -2,6 +2,7 @@ package br.ufrn.imd.pastora.domain;
 
 import br.ufrn.imd.pastora.domain.monitor.MonitorHttpDefinition;
 import br.ufrn.imd.pastora.domain.monitor.MonitorValidation;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
@@ -23,7 +24,6 @@ public class MonitorData {
     @Builder.Default
     protected final Boolean enabled = true;
 
-    @NotNull
     protected final String userId;
 
     protected final String serviceId;
@@ -31,15 +31,18 @@ public class MonitorData {
     @Positive
     protected final Integer intervalRate;
 
-    @NotNull
+    @Valid
     MonitorHttpDefinition http;
-    
+
     @Builder.Default
+    @Valid
     List<MonitorValidation> validations = new ArrayList<>();
 
     @Builder.Default
+    @Valid
     protected final List<String> onSuccess = new ArrayList<>();
 
     @Builder.Default
+    @Valid
     protected final List<String> onFail = new ArrayList<>();
 }

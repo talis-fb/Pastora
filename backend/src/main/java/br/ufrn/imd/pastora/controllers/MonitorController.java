@@ -39,11 +39,12 @@ public class MonitorController {
     @PostMapping("http")
     public ResponseEntity<String> createMonitor(@Valid @RequestBody MonitorData monitorData) {
         final String userId = authenticatedUserUtils.getAuthenticatedUserId();
-        
+        final MonitorData monitorToCreate = monitorData.withUserId(userId);
+
         final String createdId = new CreateMonitorUseCase(
             monitorRepository,
             monitorMapper
-        ).execute(monitorData);
+        ).execute(monitorToCreate);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdId);
     }

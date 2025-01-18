@@ -1,5 +1,6 @@
 package br.ufrn.imd.pastora.domain.monitor;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,8 @@ import lombok.With;
 public class MonitorValidation {
     @NotNull
     protected final String field; // e.g., "status", "url", "method", "body", "headers"
+
+    @Valid
     @NotNull
     protected final Operation operation;
     @NotNull
