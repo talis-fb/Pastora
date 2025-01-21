@@ -95,12 +95,12 @@ public class ServiceController {
         @RequestParam(required = true) String id,
         @RequestParam(required = true) String name,
         @RequestParam (required = false) String description,
-        @RequestParam (required = false) MultipartFile photo        
+        @RequestParam (required = false) MultipartFile icon        
     ) {
         logger.debug("Updating service: {}", id);
         final String userId = this.authenticatedUserUtils.getAuthenticatedUserId();
 
-        this.validatePhotoType(photo);
+        this.validatePhotoType(icon);
         final Service service = Service.builder()
                 .name(name)
                 .description(description)
@@ -111,7 +111,7 @@ public class ServiceController {
             serviceRepository,
             photoStorageComponent,
             serviceMapper
-        ).execute(id, service, photo, userId);
+        ).execute(id, service, icon, userId);
 
         return ResponseEntity.ok(updated);
     }
