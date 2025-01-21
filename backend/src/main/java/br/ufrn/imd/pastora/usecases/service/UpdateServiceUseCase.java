@@ -1,5 +1,6 @@
-package br.ufrn.imd.pastora.usecases;
+package br.ufrn.imd.pastora.usecases.service;
 
+import br.ufrn.imd.pastora.mappers.ServiceMapper;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +16,7 @@ public class UpdateServiceUseCase {
   private final ServiceRepository serviceRepository;
 
   private final PhotoStorageComponent photoStorageComponent;
+  private final ServiceMapper serviceMapper;
 
 
   @Transactional(rollbackFor = Exception.class)
@@ -40,6 +42,6 @@ public class UpdateServiceUseCase {
       .withIconUrl(newIconUrl);
 
     final ServiceModel updated = serviceRepository.save(serviceToUpdate);
-    return updated.toEntity();
+    return serviceMapper.fromServiceModel(updated);
   } 
 }

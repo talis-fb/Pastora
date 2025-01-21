@@ -1,9 +1,12 @@
 package br.ufrn.imd.pastora.domain;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.With;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,16 +19,16 @@ public class ExecutionData {
 
     protected final String monitorId;
     protected final String data;
-    protected final List<ExecutionData.Error> errors;
+
+    @Valid
+    @Builder.Default
+    @NotNull
+    protected final List<String> errors = new ArrayList<>();
+
+    @Valid
+    @NotNull
     protected final ExecutionData.Status status;
-
-    public static class Error {
-        String message;
-        String validationId;
-    }
-
     public enum Status {
-        IDLE,
         RUNNING,
         FINISHED,
     }

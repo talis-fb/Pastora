@@ -48,7 +48,6 @@ public class HttpExecutor {
         return HttpResponse
             .builder()
             .statusCode(responseEntity.getStatusCode().value())
-            .headers(responseEntity.getHeaders().toSingleValueMap())
             .body(responseEntity.getBody())
             .build();
     }

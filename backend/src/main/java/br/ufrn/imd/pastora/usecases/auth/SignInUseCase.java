@@ -1,4 +1,4 @@
-package br.ufrn.imd.pastora.usecases;
+package br.ufrn.imd.pastora.usecases.auth;
 
 import br.ufrn.imd.pastora.config.security.JwtTokenProvider;
 import br.ufrn.imd.pastora.controllers.dto.SignInDto;

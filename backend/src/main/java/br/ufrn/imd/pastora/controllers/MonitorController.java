@@ -1,13 +1,15 @@
 package br.ufrn.imd.pastora.controllers;
 
 import br.ufrn.imd.pastora.controllers.dto.CreateHttpMonitorDto;
+import br.ufrn.imd.pastora.domain.MonitorData;
+import br.ufrn.imd.pastora.mappers.MonitorMapper;
 import br.ufrn.imd.pastora.persistence.MonitorModel;
 import br.ufrn.imd.pastora.persistence.repository.MonitorRepository;
 import br.ufrn.imd.pastora.persistence.repository.ServiceRepository;
-import br.ufrn.imd.pastora.usecases.CreateMonitorUseCase;
-import br.ufrn.imd.pastora.usecases.GetMonitorUseCase;
-import br.ufrn.imd.pastora.usecases.GetMonitorsByServiceUseCase;
-import br.ufrn.imd.pastora.usecases.GetMonitorsUseCase;
+import br.ufrn.imd.pastora.usecases.monitor.CreateMonitorUseCase;
+import br.ufrn.imd.pastora.usecases.monitor.GetMonitorUseCase;
+import br.ufrn.imd.pastora.usecases.monitor.GetMonitorsByServiceUseCase;
+import br.ufrn.imd.pastora.usecases.monitor.GetMonitorsUseCase;
 import br.ufrn.imd.pastora.utils.AuthenticatedUserUtils;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -31,19 +33,18 @@ public class MonitorController {
     private AuthenticatedUserUtils authenticatedUserUtils;
     private MonitorRepository monitorRepository;
     private ServiceRepository serviceRepository;
+    private MonitorMapper monitorMapper;
 
     @SneakyThrows
     @PostMapping("http")
-    public ResponseEntity<String> createMonitor(@Valid @RequestBody CreateHttpMonitorDto monitorDto) {
+    public ResponseEntity<String> createMonitor(@Valid @RequestBody MonitorData monitorData) {
         final String userId = authenticatedUserUtils.getAuthenticatedUserId();
-        
+        final MonitorData monitorToCreate = monitorData.withUserId(userId);
+
         final String createdId = new CreateMonitorUseCase(
-            monitorRepository
-        ).execute(
-            monitorDto.getData().withUserId(userId),
-            monitorDto.getDefinition(),
-            monitorDto.getValidations()
-        );
+            monitorRepository,
+            monitorMapper
+        ).execute(monitorToCreate);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdId);
     }

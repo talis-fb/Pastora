@@ -1,6 +1,10 @@
 package br.ufrn.imd.pastora.domain;
 
+import br.ufrn.imd.pastora.domain.monitor.MonitorHttpDefinition;
+import br.ufrn.imd.pastora.domain.monitor.MonitorValidation;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Data;
 import lombok.With;
@@ -17,25 +21,33 @@ public class MonitorData {
     protected final String description;
 
     @NotNull
+    @Builder.Default
     protected final Boolean enabled = true;
 
-    @NotNull
     protected final String userId;
 
     protected final String serviceId;
 
-    // Trigger
+    @Positive
+    @NotNull
     protected final Integer intervalRate;
 
-    protected final List<String> onSuccess = new ArrayList<>();
-    protected final List<String> onFail = new ArrayList<>();
-
+    @Valid
     @NotNull
-    protected final SaveSuccessWhen saveSuccessWhen = SaveSuccessWhen.SUCCESS;
+    MonitorHttpDefinition http;
 
-    public enum SaveSuccessWhen {
-        SUCCESS,
-        ALL_NEXT_SUCCESS,
-        ANY_NEXT_SUCCESS,
-    }
+    @Builder.Default
+    @Valid
+    @NotNull
+    List<MonitorValidation> validations = new ArrayList<>();
+
+    @Builder.Default
+    @Valid
+    @NotNull
+    protected final List<String> onSuccess = new ArrayList<>();
+
+    @Builder.Default
+    @Valid
+    @NotNull
+    protected final List<String> onFail = new ArrayList<>();
 }

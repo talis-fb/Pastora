@@ -1,4 +1,4 @@
-package br.ufrn.imd.pastora.usecases;
+package br.ufrn.imd.pastora.usecases.monitor;
 
 import br.ufrn.imd.pastora.exceptions.EntityNotFoundException;
 import br.ufrn.imd.pastora.persistence.MonitorModel;

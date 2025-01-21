@@ -1,4 +1,4 @@
-package br.ufrn.imd.pastora.domain;
+package br.ufrn.imd.pastora.domain.monitor;
 
 import br.ufrn.imd.pastora.domain.http.HttpMethod;
 import br.ufrn.imd.pastora.domain.http.HttpRequest;
@@ -17,12 +17,13 @@ public class MonitorHttpDefinition  {
     @NotNull
     String url;
 
-    String type = "HTTP";
-
     @NotNull
     HttpMethod method;
 
+    @Builder.Default
+    @NotNull
     Map<String, String> headers = new HashMap<>();
+
     String body;
 
     public HttpRequest toHttpRequest() {

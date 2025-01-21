@@ -2,8 +2,8 @@ package br.ufrn.imd.pastora.controllers;
 
 import br.ufrn.imd.pastora.controllers.dto.SignInDto;
 import br.ufrn.imd.pastora.controllers.dto.SignUpDto;
-import br.ufrn.imd.pastora.usecases.SignInUseCase;
-import br.ufrn.imd.pastora.usecases.SignUpUseCase;
+import br.ufrn.imd.pastora.usecases.auth.SignInUseCase;
+import br.ufrn.imd.pastora.usecases.auth.SignUpUseCase;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;

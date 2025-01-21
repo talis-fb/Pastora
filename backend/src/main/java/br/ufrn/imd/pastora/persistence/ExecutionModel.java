@@ -24,16 +24,6 @@ public class ExecutionModel {
     String monitorId;
     List<String> triggered; // Monitor IDS that this one triggered
     String data;
-    List<ExecutionData.Error> errors;
+    List<String> errors;
     ExecutionData.Status status;
-
-    public static ExecutionModel fromExecutionData(ExecutionData executionData) {
-        return ExecutionModel.builder()
-                .startedTime(executionData.getStartedTime())
-                .finishedTime(executionData.getFinishedTime())
-                .data(executionData.getData())
-                .errors(executionData.getErrors())
-                .monitorId(executionData.getMonitorId())
-                .build();
-    }
 }

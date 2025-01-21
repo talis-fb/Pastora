@@ -11,6 +11,5 @@ import java.util.Map;
 @Builder
 public class HttpResponse {
     int statusCode;
-    Map<String, String> headers;
     String body;
 }
