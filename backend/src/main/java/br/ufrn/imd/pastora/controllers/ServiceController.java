@@ -60,13 +60,13 @@ public class ServiceController {
     public ResponseEntity<String> createService(
         @RequestParam(required = true) String name,
         @RequestParam (required = false) String description,
-        @RequestParam (required = false) MultipartFile photo
+        @RequestParam (required = false) MultipartFile icon
     ) throws UserNotAuthenticatedException, BusinessException {
         logger.info("Creating new service");
         final String userId = this.authenticatedUserUtils.getAuthenticatedUserId();
         logger.info("User ID: {}", userId);
 
-        this.validatePhotoType(photo);
+        this.validatePhotoType(icon);
         final Service service = Service.builder()
             .name(name)
             .description(description)
@@ -81,7 +81,7 @@ public class ServiceController {
             serviceRepository,
             photoStorageComponent,
             serviceMapper
-        ).execute(service, photo);
+        ).execute(service, icon);
 
         logger.info("Created Service ID: {}", createdServiceId);
 

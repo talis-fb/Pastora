@@ -12,12 +12,10 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(request => {
-  console.log('Request:', {
-    url: request.url,
-    method: request.method,
-    data: request.data,
-    headers: request.headers
-  });
+  const token = sessionStorage.getItem("access_token");
+
+  if(token) request.headers.Authorization = `Bearer ${token}`;
+
   return request;
 });
 
@@ -32,7 +30,7 @@ api.interceptors.response.use(
       data: error.response?.data,
       config: error.config
     });
-    if (error.response?.status === 401) {
+    if ([401, 403].includes(error.response?.status)) {
       sessionStorage.removeItem('access_token');
       window.location.href = '/signin';
     }
