@@ -6,7 +6,7 @@
         <input
           type="text"
           v-model="searchQuery"
-          placeholder="Buscar"
+          placeholder="Search"
           class="w-full max-w-md px-4 py-2 text-sm rounded-lg bg-[#1E293B] text-[#94A3B8] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#3576DF]"
         />
       </div>
