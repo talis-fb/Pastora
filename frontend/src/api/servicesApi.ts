@@ -23,6 +23,14 @@ const serviceApi = {
     }
   },
 
+  async findServiceById(serviceId:string) {
+    try {
+      const response = await api.get("/services/"+serviceId);
+      return response.data;
+    } catch (error: any) {
+      return error.message;
+    }    
+  },
   async createService(data: CreateServiceDto) {
     const formData = new FormData();
     formData.append('name', data.name);
