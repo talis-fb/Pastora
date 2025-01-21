@@ -7,7 +7,7 @@
         <input
           type="text"
           v-model="searchQuery"
-          placeholder="Buscar"
+          placeholder="Search"
           class="w-full max-w-md px-4 py-2 text-sm rounded-lg bg-[#1E293B] text-[#94A3B8] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#3576DF]"
         />
       </div>
@@ -28,12 +28,13 @@
         :key="service.id"
         :name="service.name"
         :image="service.iconUrl"
+        @click="goToServiceDetails(service.id)"
       />
     </div>
 
     <!-- Mensagem caso não haja serviços -->
     <div v-else class="text-center text-lg text-[#94A3B8]">
-      Nenhum serviço encontrado.
+      No services found.
     </div>
 
     <AddServiceModal 
@@ -48,12 +49,17 @@ import { ref, computed, onMounted } from "vue";
 import ServiceCard from "@/components/ServiceCard.vue";
 import AddServiceModal from "@/components/AddServiceModal.vue"; 
 import serviceApi from "@/api/servicesApi";
+import { useRouter } from "vue-router";
 
 // Dados reativos
 const services = ref([]);
 const searchQuery = ref("");
 const addServiceModalRef = ref();
+const router = useRouter();
 
+const goToServiceDetails = (id) => {
+  router.push(`/services/${id}`);
+};
 // Função para carregar os serviços
 const loadServices = async () => {
   try {

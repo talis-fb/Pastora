@@ -22,9 +22,26 @@
       >
         <span class="material-icons-outlined mr-2">monitor</span> Monitors
       </router-link>
+
+    <!-- Logout -->
+    <div class="flex items-center space-x-4">
+      <button
+        @click="logout"
+        class="hover:text-white flex items-center text-[#94A3B8] text-lg"
+      >
+        <span class="material-icons-outlined mr-2">logout</span> Logout
+      </button>
+    </div>      
     </nav>
   </header>
 </template>
 
 <script setup>
+import { useAuthStore } from '@/stores/auth'; // Substitua pelo caminho correto do store
+
+// Importa o store e obtém a função logout
+const authStore = useAuthStore();
+const logout = () => {
+  authStore.logout(); // Executa o logout do usuário
+};
 </script>
